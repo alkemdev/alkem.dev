@@ -11,14 +11,9 @@ export function initScrollAnimation(scene: HeroScene): ScrollTrigger {
     end: 'bottom top',
     scrub: 1,
     onUpdate: (self) => {
-      const progress = self.progress
-      // Pull camera back as user scrolls
-      scene.camera.position.z = 5.5 + progress * 4
-      // Fade out the geometry
-      scene.uniforms.uOpacity.value = 1 - progress
-      // Scale down slightly
-      const scale = 1 - progress * 0.3
-      scene.group.scale.setScalar(scale)
+      const p = self.progress
+      scene.uniforms.uOpacity.value = 1 - p
+      scene.group.scale.setScalar(1 - p * 0.3)
     },
   })
 

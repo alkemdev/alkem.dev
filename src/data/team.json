@@ -5,8 +5,19 @@
     "role": "Founder",
     "blurb": "Mathematician and engineer. Interested in algorithms, compilers, and GPU programming.",
     "socials": {
-      "github": "https://github.com/cade"
+      "github": "https://github.com/cadebrown"
     },
     "order": 1
+  },
+  {
+    "id": "greg",
+    "name": "Greg",
+    "role": "Founding Engineer",
+    "blurb": "HCI researcher and full-stack engineer. Interested in programming languages, AI, and creative tools.",
+    "socials": {
+      "github": "https://github.com/gcrois",
+      "website": "https://g.regory.dev"
+    },
+    "order": 2
   }
 ]

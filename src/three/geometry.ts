@@ -69,11 +69,11 @@ export function createFractalGeometry(): { group: THREE.Group; uniforms: Fractal
   })))
 
   // --- Collar / lip ring at neck top ---
-  const collarGeo = new THREE.TorusGeometry(0.283, 0.02, 6, segments)
+  const collarGeo = new THREE.TorusGeometry(0.297, 0.02, 6, segments)
   const collarEdges = new THREE.EdgesGeometry(collarGeo)
   const collar = new THREE.LineSegments(collarEdges,
     new THREE.LineBasicMaterial({ color: 0xaa66cc, transparent: true, opacity: 0.5 }))
-  collar.position.y = 1.54
+  collar.position.y = 1.43
   collar.rotation.x = Math.PI / 2
   group.add(collar)
 
@@ -153,23 +153,23 @@ function buildFlaskProfileFromSVG(): THREE.Vector2[] {
   const mapY = (svgY: number) => 1.8 - ((svgY - yTop) / yRange) * 3.1
 
   const rawPoints: [number, number][] = [
-    // Collar / lip
-    [0.01, 2.5],
-    [9.05, 2.5],
-    [9.79, 2.7],
-    [9.05, 2.9],
-    // Neck — longer
-    [9.05, 3.3],
-    [9.05, 4.0],
-    [9.05, 4.8],
-    [9.05, 5.5],
+    // Collar / lip — 5% wider, lower
+    [0.01, 3.0],
+    [9.50, 3.0],
+    [10.28, 3.2],
+    [9.50, 3.4],
+    // Neck
+    [9.50, 3.8],
+    [9.50, 4.5],
+    [9.50, 5.2],
+    [9.50, 5.8],
     // Shoulder
-    [10.00, 5.75],
-    [12.00, 6.1],
-    // Sides — matching liquid slope
-    [16.00, 7.0],
-    [20.00, 7.8],
-    [25.00, 8.8],
+    [10.50, 6.05],
+    [12.50, 6.4],
+    // Sides — slightly less steep
+    [17.00, 7.2],
+    [21.50, 8.0],
+    [26.00, 9.0],
     // Wide flat base (same as before)
     [32.00, 11.0],
     [32.00, 12.0],
