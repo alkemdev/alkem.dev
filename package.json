@@ -5,25 +5,30 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "check": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
-    "astro": "^5.7.0",
     "@astrojs/check": "^0.9.0",
     "@astrojs/mdx": "^4.2.0",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.3.0",
+    "astro": "^5.7.0",
     "astro-expressive-code": "^0.40.0",
-    "three": "^0.175.0",
     "gsap": "^3.12.0",
     "katex": "^0.16.0",
-    "remark-math": "^6.0.0",
     "rehype-katex": "^7.0.0",
+    "remark-math": "^6.0.0",
+    "three": "^0.175.0",
     "typescript": "^5.8.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.0",
-    "tailwindcss": "^4.1.0",
-    "@types/three": "^0.175.0"
+    "@types/three": "^0.175.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-astro": "^0.14.1",
+    "tailwindcss": "^4.1.0"
   }
 }
