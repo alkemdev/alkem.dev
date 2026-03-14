@@ -7,10 +7,6 @@ export interface FractalUniforms {
   uOpacity: THREE.IUniform<number>
 }
 
-/**
- * Builds a lathe-profile Erlenmeyer flask from triangulated polyhedral faces,
- * then adds wireframe edges, inner liquid glow, orbiting polyhedra, and particle dust.
- */
 export function createFractalGeometry(): { group: THREE.Group; uniforms: FractalUniforms } {
   const group = new THREE.Group()
 
@@ -19,15 +15,27 @@ export function createFractalGeometry(): { group: THREE.Group; uniforms: Fractal
     uOpacity: { value: 1 },
   }
 
-  // --- Flask body (lathe geometry with low-poly faceted look) ---
-  const flaskProfile = buildFlaskProfile()
-  const radialSegments = 10
-  const flaskGeo = new THREE.LatheGeometry(flaskProfile, radialSegments, 0, Math.PI * 2)
-  flaskGeo.computeVertexNormals()
+  const segments = 12
 
-  // Convert to flat-shaded indexed geometry for faceted look
+  // --- Flask body built from the SVG outline ---
+  // The SVG viewbox is 16×16, centered at x=8.
+  // Outline path key points (x, y) in SVG coords:
+  //   Neck left: x=6.645 -> radius = 8 - 6.645 = 1.355
+  //   Neck runs from y=2.457 to y≈5.9
+  //   Shoulder flares: radius goes from 1.355 to ~5.3 over y=5.9..8.8
+  //   Body widest: radius ~6.5 at y≈13
+  //   Bottom: y≈15.16, radius tapers to ~5.4 then to 0
+  //
+  // Normalize to unit scale: divide radii by 6.5 and map y into [-1, top].
+  // Total height in SVG: ~12.7 (from y=2.457 to y=15.16).
+  // Let's map so center of body is at y=0.
+  // Scale factor for radius: 1/6.5 ≈ 0.154
+  // Scale factor for height: map [2.457, 15.16] -> [1.8, -1.15] (top to bottom)
+
+  const profile = buildFlaskProfileFromSVG()
+  const flaskGeo = new THREE.LatheGeometry(profile, segments, 0, Math.PI * 2)
   const flatFlask = toFlatShaded(flaskGeo)
-  addSphericalUVs(flatFlask, 1.6)
+  addCylindricalUVs(flatFlask, profile)
 
   const flaskMat = new THREE.ShaderMaterial({
     vertexShader,
@@ -37,162 +45,196 @@ export function createFractalGeometry(): { group: THREE.Group; uniforms: Fractal
     side: THREE.DoubleSide,
     depthWrite: false,
   })
-  const flaskMesh = new THREE.Mesh(flatFlask, flaskMat)
-  group.add(flaskMesh)
+  group.add(new THREE.Mesh(flatFlask, flaskMat))
 
-  // --- Wireframe edges (visible polyhedral structure) ---
-  const edgesGeo = new THREE.EdgesGeometry(flatFlask, 15)
+  // --- Wireframe edges (polyhedral structure) ---
+  const edgesGeo = new THREE.EdgesGeometry(flatFlask, 10)
   const edgesMat = new THREE.LineBasicMaterial({
-    color: 0xbb77dd,
+    color: 0xaa66cc,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.5,
   })
-  const edgeLines = new THREE.LineSegments(edgesGeo, edgesMat)
-  group.add(edgeLines)
+  group.add(new THREE.LineSegments(edgesGeo, edgesMat))
 
-  // --- Vertex points (glowing dots at vertices) ---
-  const vertPoints = extractUniqueVertices(flatFlask)
-  const vertGeo = new THREE.BufferGeometry()
-  vertGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertPoints, 3))
-  const vertMat = new THREE.PointsMaterial({
-    color: 0x60a879,
-    size: 0.05,
+  // --- Vertex dots ---
+  const verts = extractUniqueVertices(flatFlask)
+  const vGeo = new THREE.BufferGeometry()
+  vGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
+  group.add(new THREE.Points(vGeo, new THREE.PointsMaterial({
+    color: 0x88ddaa,
+    size: 0.035,
     transparent: true,
-    opacity: 1.0,
+    opacity: 0.85,
     sizeAttenuation: true,
-  })
-  const vertDots = new THREE.Points(vertGeo, vertMat)
-  group.add(vertDots)
+  })))
 
-  // --- Inner liquid glow (smaller flask shape with emission) ---
+  // --- Collar / lip ring at neck top ---
+  const collarGeo = new THREE.TorusGeometry(0.283, 0.02, 6, segments)
+  const collarEdges = new THREE.EdgesGeometry(collarGeo)
+  const collar = new THREE.LineSegments(collarEdges,
+    new THREE.LineBasicMaterial({ color: 0xaa66cc, transparent: true, opacity: 0.5 }))
+  collar.position.y = 1.54
+  collar.rotation.x = Math.PI / 2
+  group.add(collar)
+
+  // --- Inner liquid geometry (green, filling lower portion) ---
   const liquidProfile = buildLiquidProfile()
-  const liquidGeo = new THREE.LatheGeometry(liquidProfile, radialSegments, 0, Math.PI * 2)
+  const liquidGeo = new THREE.LatheGeometry(liquidProfile, segments, 0, Math.PI * 2)
   const flatLiquid = toFlatShaded(liquidGeo)
-  const liquidMat = new THREE.MeshBasicMaterial({
+  group.add(new THREE.Mesh(flatLiquid, new THREE.MeshBasicMaterial({
     color: 0x60a879,
     transparent: true,
-    opacity: 0.04,
+    opacity: 0.05,
     side: THREE.DoubleSide,
-  })
-  const liquidMesh = new THREE.Mesh(flatLiquid, liquidMat)
-  group.add(liquidMesh)
+  })))
+  const liqEdges = new THREE.EdgesGeometry(flatLiquid, 10)
+  group.add(new THREE.LineSegments(liqEdges,
+    new THREE.LineBasicMaterial({ color: 0x60a879, transparent: true, opacity: 0.35 })))
 
-  // Liquid wireframe
-  const liquidEdges = new THREE.EdgesGeometry(flatLiquid, 15)
-  const liquidEdgeMat = new THREE.LineBasicMaterial({
-    color: 0x70c08a,
-    transparent: true,
-    opacity: 0.45,
-  })
-  group.add(new THREE.LineSegments(liquidEdges, liquidEdgeMat))
+  // --- Meniscus ring (liquid surface line) ---
+  const meniscusR = liquidProfile[1]!.x
+  const meniscusY = liquidProfile[1]!.y
+  const mPts: THREE.Vector3[] = []
+  for (let i = 0; i <= segments; i++) {
+    const a = (i / segments) * Math.PI * 2
+    mPts.push(new THREE.Vector3(Math.cos(a) * meniscusR, meniscusY, Math.sin(a) * meniscusR))
+  }
+  group.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(mPts),
+    new THREE.LineBasicMaterial({ color: 0x60a879, transparent: true, opacity: 0.6 }),
+  ))
 
   // --- Orbiting mini polyhedra ---
   const orbitGroup = new THREE.Group()
-  const miniShapes = [
-    { geo: new THREE.TetrahedronGeometry(0.08, 0), color: 0x9955bb, dist: 2.2, speed: 0.7, phase: 0 },
-    { geo: new THREE.OctahedronGeometry(0.06, 0), color: 0x60a879, dist: 2.5, speed: -0.5, phase: 1.2 },
-    { geo: new THREE.IcosahedronGeometry(0.07, 0), color: 0xd9bf60, dist: 1.9, speed: 0.9, phase: 2.4 },
-    { geo: new THREE.TetrahedronGeometry(0.05, 0), color: 0x9955bb, dist: 2.8, speed: -0.4, phase: 3.8 },
-    { geo: new THREE.OctahedronGeometry(0.09, 0), color: 0x60a879, dist: 2.1, speed: 0.6, phase: 5.0 },
-    { geo: new THREE.DodecahedronGeometry(0.06, 0), color: 0xd9bf60, dist: 2.6, speed: -0.8, phase: 0.7 },
+  const minis = [
+    { geo: new THREE.TetrahedronGeometry(0.06, 0), color: 0x9955bb, dist: 1.9, speed: 0.5, phase: 0 },
+    { geo: new THREE.OctahedronGeometry(0.05, 0), color: 0x60a879, dist: 2.2, speed: -0.4, phase: 1.3 },
+    { geo: new THREE.IcosahedronGeometry(0.055, 0), color: 0xd9bf60, dist: 1.7, speed: 0.7, phase: 2.6 },
+    { geo: new THREE.TetrahedronGeometry(0.04, 0), color: 0x9955bb, dist: 2.5, speed: -0.3, phase: 4.0 },
+    { geo: new THREE.OctahedronGeometry(0.06, 0), color: 0x60a879, dist: 1.8, speed: 0.5, phase: 5.2 },
   ]
-
-  for (const s of miniShapes) {
-    const edges = new THREE.EdgesGeometry(s.geo)
-    const lineMat = new THREE.LineBasicMaterial({
-      color: s.color,
-      transparent: true,
-      opacity: 0.7,
-    })
-    const lineSegs = new THREE.LineSegments(edges, lineMat)
-    lineSegs.userData = { dist: s.dist, speed: s.speed, phase: s.phase }
-    orbitGroup.add(lineSegs)
+  for (const s of minis) {
+    const e = new THREE.EdgesGeometry(s.geo)
+    const l = new THREE.LineSegments(e,
+      new THREE.LineBasicMaterial({ color: s.color, transparent: true, opacity: 0.6 }))
+    l.userData = { dist: s.dist, speed: s.speed, phase: s.phase }
+    orbitGroup.add(l)
   }
   group.add(orbitGroup)
   ;(group as any)._orbitGroup = orbitGroup
 
-  // --- Particle dust cloud ---
-  const particleCount = 350
-  const particlePositions = new Float32Array(particleCount * 3)
-  const particleSizes = new Float32Array(particleCount)
-  for (let i = 0; i < particleCount; i++) {
-    const theta = Math.random() * Math.PI * 2
-    const phi = Math.acos(2 * Math.random() - 1)
-    const r = 2.0 + Math.random() * 2.5
-    particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
-    particlePositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
-    particlePositions[i * 3 + 2] = r * Math.cos(phi)
-    particleSizes[i] = 0.01 + Math.random() * 0.03
-  }
-  const particleGeo = new THREE.BufferGeometry()
-  particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3))
-  particleGeo.setAttribute('size', new THREE.Float32BufferAttribute(particleSizes, 1))
-  const particleMat = new THREE.PointsMaterial({
-    color: 0x9955bb,
-    size: 0.02,
-    transparent: true,
-    opacity: 0.5,
-    sizeAttenuation: true,
-  })
-  const particles = new THREE.Points(particleGeo, particleMat)
-  group.add(particles)
-
-  // Second particle layer (green)
-  const particlePositions2 = new Float32Array(150 * 3)
-  for (let i = 0; i < 150; i++) {
-    const theta = Math.random() * Math.PI * 2
-    const phi = Math.acos(2 * Math.random() - 1)
-    const r = 1.5 + Math.random() * 1.0
-    particlePositions2[i * 3] = r * Math.sin(phi) * Math.cos(theta)
-    particlePositions2[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
-    particlePositions2[i * 3 + 2] = r * Math.cos(phi)
-  }
-  const particleGeo2 = new THREE.BufferGeometry()
-  particleGeo2.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions2, 3))
-  const particleMat2 = new THREE.PointsMaterial({
-    color: 0x60a879,
-    size: 0.015,
-    transparent: true,
-    opacity: 0.4,
-    sizeAttenuation: true,
-  })
-  group.add(new THREE.Points(particleGeo2, particleMat2))
+  // --- Particle dust ---
+  group.add(makeParticleCloud(250, 2.0, 3.0, 0x9955bb, 0.015, 0.4))
+  group.add(makeParticleCloud(100, 1.0, 0.8, 0x60a879, 0.012, 0.3, -0.3))
 
   return { group, uniforms }
 }
 
-function buildFlaskProfile(): THREE.Vector2[] {
-  // Erlenmeyer flask profile: narrow neck -> shoulder -> wide base (bottom)
-  // Y goes from top (positive) to bottom (negative)
-  return [
-    new THREE.Vector2(0.001, 1.6),   // tip top (near zero radius)
-    new THREE.Vector2(0.18, 1.6),    // neck top
-    new THREE.Vector2(0.18, 1.0),    // neck bottom
-    new THREE.Vector2(0.22, 0.9),    // start of shoulder
-    new THREE.Vector2(0.4, 0.65),    // shoulder curve
-    new THREE.Vector2(0.65, 0.35),   // mid shoulder
-    new THREE.Vector2(0.85, 0.05),   // widening
-    new THREE.Vector2(0.95, -0.25),  // near base
-    new THREE.Vector2(1.0, -0.55),   // max width
-    new THREE.Vector2(1.0, -0.8),    // bottom side
-    new THREE.Vector2(0.95, -0.95),  // bottom bevel
-    new THREE.Vector2(0.001, -0.95), // base center
+function buildFlaskProfileFromSVG(): THREE.Vector2[] {
+  // Derived from the SVG outline path.
+  // SVG coordinate key points (x from center = radius, y):
+  //   Collar top: r≈1.3, y=1.33
+  //   Collar bottom/neck top: r≈1.37, y=2.46
+  //   Neck is straight: r=1.37, y=2.46 to y≈5.9
+  //   Shoulder: r grows from 1.37 -> 5.3 as y goes 5.9 -> 8.8
+  //   Body: r≈5.4..6.5, y=8.8..13.5
+  //   Bottom rounds off: y≈15.16
+  //
+  // Map into 3D: scale so max radius = 1.0, total height ≈ 3.0
+  // SVG max radius ≈ 6.5, SVG height range ≈ 13.8 (y=1.33 to 15.16)
+  // rScale = 1.0 / 6.5, yScale maps [1.33, 15.16] -> [1.8, -1.3]
+
+  // The logo is essentially a triangle/cone with a cylinder neck on top.
+  // Straight diagonal sides from the neck base to a wide, slightly rounded base.
+  const rScale = 1.0 / 32.0
+  const yTop = 1.33
+  const yBot = 15.16
+  const yRange = yBot - yTop
+  const mapY = (svgY: number) => 1.8 - ((svgY - yTop) / yRange) * 3.1
+
+  const rawPoints: [number, number][] = [
+    // Collar / lip
+    [0.01, 2.5],
+    [9.05, 2.5],
+    [9.79, 2.7],
+    [9.05, 2.9],
+    // Neck — longer
+    [9.05, 3.3],
+    [9.05, 4.0],
+    [9.05, 4.8],
+    [9.05, 5.5],
+    // Shoulder
+    [10.00, 5.75],
+    [12.00, 6.1],
+    // Sides — matching liquid slope
+    [16.00, 7.0],
+    [20.00, 7.8],
+    [25.00, 8.8],
+    // Wide flat base (same as before)
+    [32.00, 11.0],
+    [32.00, 12.0],
+    [32.00, 12.8],
+    // Base curves under
+    [31.00, 13.3],
+    [28.30, 13.8],
+    [22.40, 14.2],
+    [12.80, 14.5],
+    [0.01, 14.65],
   ]
+
+  return rawPoints.map(([r, y]) =>
+    new THREE.Vector2(r * rScale, mapY(y))
+  )
 }
 
 function buildLiquidProfile(): THREE.Vector2[] {
-  // Liquid fills the lower ~60% of the flask, slightly smaller radius
-  const inset = 0.06
-  return [
-    new THREE.Vector2(0.001, 0.3),
-    new THREE.Vector2(0.55 - inset, 0.3),
-    new THREE.Vector2(0.8 - inset, 0.0),
-    new THREE.Vector2(0.9 - inset, -0.3),
-    new THREE.Vector2(0.95 - inset, -0.55),
-    new THREE.Vector2(0.95 - inset, -0.8),
-    new THREE.Vector2(0.9 - inset, -0.9),
-    new THREE.Vector2(0.001, -0.9),
+  // Liquid fills up to roughly the SVG liquid top line at y≈6.84 -> mapped y
+  // which is in the shoulder area. Use the flask profile but inset and cut at liquid line.
+  const rScale = 1.0 / 32.0
+  const yTop = 1.33
+  const yBot = 15.16
+  const yRange = yBot - yTop
+  const mapY = (svgY: number) => 1.8 - ((svgY - yTop) / yRange) * 3.1
+
+  // Liquid tracks outer shell minus small inset
+  const inset = 0.04
+  const rawPoints: [number, number][] = [
+    [0.01, 7.5],
+    [18.80, 7.5],     // matches shell at y=7.5 (~19 minus inset)
+    [24.80, 8.8],     // matches shell at y=8.8 (25 minus inset)
+    [31.90, 11.0],
+    [31.90, 12.0],
+    [31.90, 12.8],
+    [30.90, 13.3],
+    [28.20, 13.8],
+    [22.30, 14.2],
+    [12.70, 14.45],
+    [0.01, 14.6],
   ]
+
+  return rawPoints.map(([r, y]) =>
+    new THREE.Vector2(Math.max(0.01, r * rScale - inset), mapY(y))
+  )
+}
+
+function makeParticleCloud(
+  count: number, rMin: number, rRange: number,
+  color: number, size: number, opacity: number, yOffset = 0,
+): THREE.Points {
+  const pos = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
+    const theta = Math.random() * Math.PI * 2
+    const phi = Math.acos(2 * Math.random() - 1)
+    const r = rMin + Math.random() * rRange
+    pos[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+    pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) + yOffset
+    pos[i * 3 + 2] = r * Math.cos(phi)
+  }
+  const geo = new THREE.BufferGeometry()
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+  return new THREE.Points(geo, new THREE.PointsMaterial({
+    color, size, transparent: true, opacity, sizeAttenuation: true,
+  }))
 }
 
 function toFlatShaded(geometry: THREE.BufferGeometry): THREE.BufferGeometry {
@@ -201,15 +243,17 @@ function toFlatShaded(geometry: THREE.BufferGeometry): THREE.BufferGeometry {
   return flat
 }
 
-function addSphericalUVs(geometry: THREE.BufferGeometry, scale: number) {
+function addCylindricalUVs(geometry: THREE.BufferGeometry, profile: THREE.Vector2[]) {
   const pos = geometry.getAttribute('position')
+  const yMin = profile[profile.length - 1]!.y
+  const yMax = profile[0]!.y
   const uvs = new Float32Array(pos.count * 2)
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i)
     const y = pos.getY(i)
     const z = pos.getZ(i)
     uvs[i * 2] = Math.atan2(z, x) / (2 * Math.PI) + 0.5
-    uvs[i * 2 + 1] = y / scale * 0.5 + 0.5
+    uvs[i * 2 + 1] = (y - yMin) / (yMax - yMin)
   }
   geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2))
 }
