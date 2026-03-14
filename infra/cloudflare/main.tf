@@ -22,33 +22,13 @@ variable "zone_name" {
   default     = "alkem.dev"
 }
 
-variable "github_owner" {
-  description = "GitHub organization or user"
+variable "pages_project_name" {
+  description = "Cloudflare Pages project name (created via dashboard with GitHub integration)"
   type        = string
-  default     = "alkemdev"
+  default     = "alkem-dev"
 }
 
-# Pages project
-resource "cloudflare_pages_project" "site" {
-  account_id = var.account_id
-  name       = "alkem-dev"
-
-  production_branch = "main"
-
-  build_config = {
-    build_command   = "npm run build"
-    destination_dir = "dist"
-  }
-}
-
-# Custom domain binding
-resource "cloudflare_pages_domain" "apex" {
-  account_id   = var.account_id
-  project_name = cloudflare_pages_project.site.name
-  name         = var.zone_name
-}
-
-# DNS — look up zone
+# DNS zone lookup
 data "cloudflare_zones" "main" {
   name = var.zone_name
 }
@@ -57,11 +37,19 @@ locals {
   zone_id = data.cloudflare_zones.main.result[0].id
 }
 
+# Custom domain binding
+resource "cloudflare_pages_domain" "apex" {
+  account_id   = var.account_id
+  project_name = var.pages_project_name
+  name         = var.zone_name
+}
+
+# DNS CNAME record
 resource "cloudflare_dns_record" "apex" {
   zone_id = local.zone_id
   name    = "@"
   type    = "CNAME"
-  content = "${cloudflare_pages_project.site.name}.pages.dev"
+  content = "${var.pages_project_name}.pages.dev"
   proxied = true
   ttl     = 1
 }
