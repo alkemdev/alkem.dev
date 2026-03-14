@@ -35,16 +35,7 @@ resource "cloudflare_pages_project" "site" {
 
   production_branch = "main"
 
-  source {
-    type = "github"
-    config {
-      owner             = var.github_owner
-      repo_name         = "alkem.dev"
-      production_branch = "main"
-    }
-  }
-
-  build_config {
+  build_config = {
     build_command   = "npm run build"
     destination_dir = "dist"
   }
@@ -54,20 +45,23 @@ resource "cloudflare_pages_project" "site" {
 resource "cloudflare_pages_domain" "apex" {
   account_id   = var.account_id
   project_name = cloudflare_pages_project.site.name
-  domain       = var.zone_name
+  name         = var.zone_name
 }
 
-# DNS records
-data "cloudflare_zone" "main" {
-  filter {
-    name = var.zone_name
-  }
+# DNS — look up zone
+data "cloudflare_zones" "main" {
+  name = var.zone_name
+}
+
+locals {
+  zone_id = data.cloudflare_zones.main.result[0].id
 }
 
 resource "cloudflare_dns_record" "apex" {
-  zone_id = data.cloudflare_zone.main.zone_id
+  zone_id = local.zone_id
   name    = "@"
   type    = "CNAME"
   content = "${cloudflare_pages_project.site.name}.pages.dev"
   proxied = true
+  ttl     = 1
 }
