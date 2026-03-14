@@ -1,0 +1,26 @@
+---
+import Page from '@layouts/Page.astro'
+import TeamCard from '@components/TeamCard.astro'
+import { getCollection } from 'astro:content'
+
+const team = (await getCollection('team')).sort(
+  (a, b) => a.data.order - b.data.order,
+)
+---
+
+<Page title="Team" description="The people behind Alkemical Development.">
+  <h1 class="mb-10 text-4xl font-bold">Team</h1>
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {
+      team.map((member) => (
+        <TeamCard
+          name={member.data.name}
+          role={member.data.role}
+          blurb={member.data.blurb}
+          image={member.data.image}
+          socials={member.data.socials}
+        />
+      ))
+    }
+  </div>
+</Page>

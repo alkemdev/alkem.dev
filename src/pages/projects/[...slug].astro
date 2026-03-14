@@ -1,0 +1,43 @@
+---
+import Page from '@layouts/Page.astro'
+import { getCollection, render } from 'astro:content'
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects')
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }))
+}
+
+const { project } = Astro.props
+const { Content } = await render(project)
+---
+
+<Page title={project.data.title} description={project.data.blurb}>
+  <article class="mx-auto max-w-3xl">
+    <header class="mb-10">
+      <h1 class="text-4xl font-bold">{project.data.title}</h1>
+      <p class="mt-4 text-lg text-text-dim">{project.data.blurb}</p>
+      <div class="mt-4 flex items-center gap-4">
+        {
+          project.data.repo && (
+            <a href={project.data.repo} class="text-sm text-green hover:text-purple">
+              Repository &#8594;
+            </a>
+          )
+        }
+        {
+          project.data.url && (
+            <a href={project.data.url} class="text-sm text-green hover:text-purple">
+              Website &#8594;
+            </a>
+          )
+        }
+      </div>
+    </header>
+    <div class="prose prose-invert max-w-none prose-headings:text-text prose-a:text-green prose-code:text-purple prose-pre:bg-bg-raised prose-pre:border prose-pre:border-border">
+      <Content />
+    </div>
+  </article>
+</Page>

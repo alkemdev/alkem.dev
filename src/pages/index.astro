@@ -1,0 +1,93 @@
+---
+import Root from '@layouts/Root.astro'
+import Nav from '@components/Nav.astro'
+import Footer from '@components/Footer.astro'
+import Hero from '@components/Hero.astro'
+import Section from '@components/Section.astro'
+import ProjectCard from '@components/ProjectCard.astro'
+import TeamCard from '@components/TeamCard.astro'
+import PostCard from '@components/PostCard.astro'
+import { getCollection } from 'astro:content'
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4)
+
+const team = (await getCollection('team'))
+  .sort((a, b) => a.data.order - b.data.order)
+
+const posts = (await getCollection('posts'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.dated.getTime() - a.data.dated.getTime())
+  .slice(0, 3)
+---
+
+<Root>
+  <Nav />
+
+  <Hero />
+
+  <div class="mx-auto max-w-6xl px-6">
+    <Section title="Projects">
+      <div class="grid gap-6 md:grid-cols-2">
+        {
+          projects.map((project) => (
+            <ProjectCard
+              title={project.data.title}
+              blurb={project.data.blurb}
+              slug={project.id}
+              status={project.data.status}
+              tags={project.data.tags}
+            />
+          ))
+        }
+      </div>
+      <div class="mt-8">
+        <a href="/projects" class="text-sm text-text-dim hover:text-green">
+          View all projects &#8594;
+        </a>
+      </div>
+    </Section>
+
+    <Section title="Team">
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          team.map((member) => (
+            <TeamCard
+              name={member.data.name}
+              role={member.data.role}
+              blurb={member.data.blurb}
+              image={member.data.image}
+              socials={member.data.socials}
+            />
+          ))
+        }
+      </div>
+    </Section>
+
+    {
+      posts.length > 0 && (
+        <Section title="Latest Posts">
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <PostCard
+                title={post.data.title}
+                blurb={post.data.blurb}
+                slug={post.id}
+                dated={post.data.dated}
+                tags={post.data.tags}
+              />
+            ))}
+          </div>
+          <div class="mt-8">
+            <a href="/blog" class="text-sm text-text-dim hover:text-green">
+              All posts &#8594;
+            </a>
+          </div>
+        </Section>
+      )
+    }
+  </div>
+
+  <Footer />
+</Root>

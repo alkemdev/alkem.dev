@@ -1,0 +1,63 @@
+---
+import { ClientRouter } from 'astro:transitions'
+import { SITE } from '@/site'
+import '@/styles/global.css'
+
+interface Props {
+  title?: string | undefined
+  description?: string | undefined
+  image?: string | undefined
+}
+
+const {
+  title = SITE.name,
+  description = SITE.description,
+  image = '/og.png',
+} = Astro.props
+
+const pageTitle = title === SITE.name ? title : `${title} | ${SITE.name}`
+const canonicalUrl = new URL(Astro.url.pathname, SITE.url)
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.name}
+      href="/rss.xml"
+    />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, SITE.url)} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, SITE.url)} />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+      crossorigin="anonymous"
+    />
+
+    <ClientRouter />
+  </head>
+  <body class="min-h-screen bg-bg text-text antialiased">
+    <slot />
+  </body>
+</html>

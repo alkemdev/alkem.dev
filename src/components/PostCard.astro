@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string
+  blurb: string
+  slug: string
+  dated: Date
+  tags?: string[]
+}
+
+const { title, blurb, slug, dated, tags = [] } = Astro.props
+---
+
+<a
+  href={`/blog/${slug}`}
+  class="group block rounded-xl border border-border bg-bg-raised p-6 transition-colors hover:border-green/50"
+>
+  <time datetime={dated.toISOString()} class="text-xs text-text-dim">
+    {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+  </time>
+  <h3 class="mt-2 text-xl font-bold text-text group-hover:text-green transition-colors">{title}</h3>
+  <p class="mt-2 text-sm text-text-dim">{blurb}</p>
+  {
+    tags.length > 0 && (
+      <div class="mt-3 flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
+        ))}
+      </div>
+    )
+  }
+</a>

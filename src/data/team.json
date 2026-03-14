@@ -1,0 +1,12 @@
+[
+  {
+    "id": "cade",
+    "name": "Cade",
+    "role": "Founder",
+    "blurb": "Mathematician and engineer. Interested in algorithms, compilers, and GPU programming.",
+    "socials": {
+      "github": "https://github.com/cade"
+    },
+    "order": 1
+  }
+]

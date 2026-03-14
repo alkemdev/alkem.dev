@@ -1,0 +1,73 @@
+---
+import { SITE } from '@/site'
+---
+
+<section class="relative flex min-h-screen items-center justify-center overflow-hidden" id="hero">
+  <!-- Three.js canvas -->
+  <canvas
+    id="hero-canvas"
+    class="absolute inset-0 h-full w-full"
+  ></canvas>
+
+  <!-- CSS fallback gradient (shown when canvas is not active) -->
+  <div
+    id="hero-fallback"
+    class="absolute inset-0"
+    style="background: radial-gradient(ellipse at 30% 50%, rgba(153,85,187,0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(96,168,121,0.15) 0%, transparent 50%), #0a0a0f;"
+  >
+  </div>
+
+  <!-- Text overlay -->
+  <div class="relative z-10 text-center px-6" style="text-shadow: 0 0 20px rgba(10,10,15,0.9), 0 0 40px rgba(10,10,15,0.7);">
+    <h1 class="text-5xl font-bold md:text-7xl" style="text-shadow: 0 2px 30px rgba(10,10,15,0.95), 0 0 60px rgba(10,10,15,0.8);">
+      <span class="text-green">Alkemical</span>
+      <span class="text-purple">Development</span>
+    </h1>
+    <p class="mx-auto mt-6 max-w-xl text-lg text-text-dim md:text-xl">
+      {SITE.tagline}
+    </p>
+    <div class="mt-10 flex justify-center gap-4">
+      <a
+        href="/projects"
+        class="rounded-lg bg-purple px-6 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+      >
+        Explore Projects
+      </a>
+      <a
+        href="/blog"
+        class="rounded-lg border border-border px-6 py-3 text-sm font-bold text-text transition-colors hover:border-green hover:text-green"
+      >
+        Read the Blog
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function initHero() {
+    const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null
+    const fallback = document.getElementById('hero-fallback')
+    if (!canvas) return
+
+    try {
+      const { HeroScene } = await import('@three/scene')
+      const scene = new HeroScene(canvas)
+
+      const { initScrollAnimation } = await import('@three/scroll')
+      const trigger = initScrollAnimation(scene)
+
+      // Hide the CSS fallback since WebGL is working
+      if (fallback) fallback.style.display = 'none'
+
+      document.addEventListener('astro:before-swap', () => {
+        trigger?.kill()
+        scene.dispose()
+      })
+    } catch (e) {
+      console.warn('[hero] WebGL init failed, using CSS fallback:', e)
+    }
+  }
+
+  initHero()
+  document.addEventListener('astro:after-swap', initHero)
+</script>

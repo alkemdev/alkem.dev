@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-purple: #9955bb;
+  --color-green: #60a879;
+  --color-bg: #0a0a0f;
+  --color-bg-raised: #13131a;
+  --color-text: #e8e6e3;
+  --color-text-dim: #8a8a9a;
+  --color-border: #2a2a3a;
+  --font-sans: 'Ubuntu', sans-serif;
+  --font-mono: 'Ubuntu Mono', monospace;
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ubuntu-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/ubuntu-bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Ubuntu Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ubuntu-mono-regular.woff2') format('woff2');
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-purple) 40%, transparent);
+  }
+
+  a {
+    color: var(--color-green);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  a:hover {
+    color: var(--color-purple);
+  }
+}

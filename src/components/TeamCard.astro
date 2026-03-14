@@ -1,0 +1,45 @@
+---
+interface Props {
+  name: string
+  role: string
+  blurb: string
+  image?: string | undefined
+  socials?: Record<string, string> | undefined
+}
+
+const { name, role, blurb, image, socials = {} } = Astro.props
+---
+
+<div class="rounded-xl border border-border bg-bg-raised p-6">
+  <div class="flex items-start gap-4">
+    {
+      image ? (
+        <img
+          src={image}
+          alt={name}
+          class="h-16 w-16 rounded-full object-cover"
+        />
+      ) : (
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple/20 text-2xl font-bold text-purple">
+          {name[0]}
+        </div>
+      )
+    }
+    <div>
+      <h3 class="text-lg font-bold">{name}</h3>
+      <p class="text-sm text-green">{role}</p>
+    </div>
+  </div>
+  <p class="mt-4 text-sm text-text-dim">{blurb}</p>
+  {
+    Object.keys(socials).length > 0 && (
+      <div class="mt-4 flex gap-4">
+        {Object.entries(socials).map(([platform, url]) => (
+          <a href={url} class="text-xs text-text-dim hover:text-text capitalize">
+            {platform}
+          </a>
+        ))}
+      </div>
+    )
+  }
+</div>

@@ -1,0 +1,39 @@
+---
+interface Props {
+  title: string
+  blurb: string
+  slug: string
+  status?: string
+  tags?: string[]
+}
+
+const { title, blurb, slug, status = 'active', tags = [] } = Astro.props
+
+const statusColor: Record<string, string> = {
+  active: 'text-green',
+  completed: 'text-text-dim',
+  planned: 'text-purple',
+}
+---
+
+<a
+  href={`/projects/${slug}`}
+  class="group block rounded-xl border border-border bg-bg-raised p-6 transition-colors hover:border-purple/50"
+>
+  <div class="mb-2 flex items-center justify-between">
+    <h3 class="text-xl font-bold text-text group-hover:text-purple transition-colors">{title}</h3>
+    <span class:list={['text-xs capitalize', statusColor[status] ?? 'text-text-dim']}>
+      {status}
+    </span>
+  </div>
+  <p class="text-sm text-text-dim">{blurb}</p>
+  {
+    tags.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
+        ))}
+      </div>
+    )
+  }
+</a>
