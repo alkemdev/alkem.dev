@@ -68,10 +68,10 @@ void main() {
   color += GOLD * smoothstep(0.85, 0.95, spark) * 0.08;
 
   // Alpha: neck nearly invisible, liquid more present
-  float alphaBase = mix(0.2, 0.4, purpleZone);
-  alphaBase = mix(alphaBase, 0.75, inLiquid);
-  alphaBase = mix(alphaBase, 0.15, inNeck);
-  float alpha = (alphaBase + fresnel * 0.25) * uOpacity;
+  float alphaBase = mix(0.15, 0.3, purpleZone);
+  alphaBase = mix(alphaBase, 0.6, inLiquid);
+  alphaBase = mix(alphaBase, 0.1, inNeck);
+  float alpha = (alphaBase + fresnel * 0.15) * uOpacity;
 
   gl_FragColor = vec4(color, alpha);
 }
