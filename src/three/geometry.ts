@@ -138,8 +138,11 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
   }
 
   // --- All 5 Platonic solids on mathematical orbits ---
-  // Dual pairs: cube↔octa, dodeca↔icosa. Varied Lissajous/knot orbits + per-solid trails.
+  // Dual pairs: cube↔octa, dodeca↔icosa. Colors from config.platonicColors schema.
   const orbitGroup = new THREE.Group()
+  const orbitsCfg = config.orbits ?? defaultSceneConfig.orbits
+  const colors = orbitsCfg.platonicColors
+
   const platonics: {
     geo: THREE.BufferGeometry
     color: number
@@ -149,42 +152,41 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
   }[] = [
     {
       geo: new THREE.TetrahedronGeometry(0.07, 0),
-      color: 0x9955bb,
+      color: colors[0],
       size: 0.07,
       orbit: { a: 2.2, b: 0.5, c: 1.9, freqX: 3, freqY: 5, freqZ: 2, phaseY: Math.PI / 2, phaseZ: Math.PI / 4 },
       spinRate: 1.1,
     },
     {
       geo: new THREE.BoxGeometry(0.09, 0.09, 0.09),
-      color: 0x50b080,
+      color: colors[1],
       size: 0.09,
       orbit: { a: 2.5, b: 0.6, c: 2.2, freqX: 2, freqY: 3, freqZ: 2, phaseY: 0, phaseZ: Math.PI / 2 },
       spinRate: -0.6,
     },
     {
       geo: new THREE.OctahedronGeometry(0.065, 0),
-      color: 0x70c090,
+      color: colors[2],
       size: 0.065,
       orbit: { a: 1.9, b: 0.75, c: 1.7, freqX: 4, freqY: 2, freqZ: 3, phaseY: Math.PI / 3, phaseZ: -Math.PI / 6 },
       spinRate: 0.8,
     },
     {
       geo: new THREE.DodecahedronGeometry(0.06, 0),
-      color: 0xd9a040,
+      color: colors[3],
       size: 0.06,
       orbit: { a: 2.4, b: 0.45, c: 2.0, freqX: 1, freqY: 4, freqZ: 3, phaseY: Math.PI * 0.7, phaseZ: Math.PI / 6 },
       spinRate: -0.5,
     },
     {
       geo: new THREE.IcosahedronGeometry(0.055, 0),
-      color: 0xe0b850,
+      color: colors[4],
       size: 0.055,
       orbit: { a: 1.7, b: 0.85, c: 1.8, freqX: 5, freqY: 3, freqZ: 4, phaseY: Math.PI / 5, phaseZ: Math.PI / 3 },
       spinRate: 1.2,
     },
   ]
 
-  const orbitsCfg = config.orbits ?? defaultSceneConfig.orbits
   const cometScale = orbitsCfg.cometScale
 
   for (const p of platonics) {
@@ -496,12 +498,12 @@ function buildLiquidProfile(): THREE.Vector2[] {
   const yRange = yBot - yTop
   const mapY = (svgY: number) => 1.8 - ((svgY - yTop) / yRange) * 3.1
 
-  // Liquid tracks outer shell minus small inset; surface lowered for slightly less full
+  // Liquid tracks outer shell minus small inset; surface lowered (less full)
   const inset = 0.04
   const rawPoints: [number, number][] = [
-    [0.01, 8.6],
-    [20.20, 8.6],     // liquid surface lower (less full)
-    [25.20, 9.4],
+    [0.01, 9.5],
+    [21.00, 9.5],     // liquid surface lower
+    [26.00, 10.0],
     [31.90, 11.0],
     [31.90, 12.0],
     [31.90, 12.8],

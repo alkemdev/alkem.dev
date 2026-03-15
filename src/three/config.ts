@@ -39,9 +39,14 @@ export interface FlaskConfig {
   showCollar: boolean
 }
 
+/** Five distinct colors for the Platonic solids (tetra, cube, octa, dodeca, icosa). Hex. */
+export type PlatonicColorSchema = [number, number, number, number, number]
+
 export interface OrbitsConfig {
   /** Scale factor for the orbiting Platonic solids (comets). */
   cometScale: number
+  /** One color per solid: [tetrahedron, cube, octahedron, dodecahedron, icosahedron]. */
+  platonicColors: PlatonicColorSchema
   /** Trail ribbon width at head (world units). */
   trailRibbonWidth: number
   /** Trail ribbon opacity (0–1). */
@@ -65,6 +70,7 @@ export interface SceneConfig {
 
 const defaultOrbits: OrbitsConfig = {
   cometScale: 1.95,
+  platonicColors: [0x9955bb, 0x4a9fd4, 0x60b890, 0xd9a040, 0xc97060],
   trailRibbonWidth: 0.065,
   trailRibbonOpacity: 0.42,
   trailGlowWidth: 0.11,

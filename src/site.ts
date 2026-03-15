@@ -1,8 +1,16 @@
+// Tagline options (not open-source–centric). Pick one for SITE.tagline:
+// - 'Research Laboratory'
+// - 'Software Research Laboratory'
+// - 'Software Research Lab'
+// - 'Exploring the Boundaries of Computation'
+// - 'Where Ideas Take Shape'
+// - 'Research · Build · Ship'
+// - 'Computation, Curated'
 export const SITE = {
   name: 'Alkemical Development',
-  tagline: 'Open Source Software Research Lab',
+  tagline: 'Research Laboratory',
   description:
-    'Alkemical Development is an open source software research lab exploring the boundaries of computation.',
+    'Alkemical Development is a research laboratory exploring the boundaries of computation.',
   url: 'https://alkem.dev',
   socials: {
     github: 'https://github.com/alkemdev',
