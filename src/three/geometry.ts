@@ -113,14 +113,14 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
     const liquidGeo = buildRegularGridLathe(liquidProfileUniform, horizontalSegments)
     const flatLiquid = toFlatShaded(liquidGeo)
     group.add(new THREE.Mesh(flatLiquid, new THREE.MeshBasicMaterial({
-      color: 0x60a879,
+      color: 0x306844, // Darker green
       transparent: true,
-      opacity: 0.05,
+      opacity: 0.35, // Increased opacity
       side: THREE.DoubleSide,
     })))
     const liqEdges = new THREE.EdgesGeometry(flatLiquid, cfg.wireframeAngleThreshold)
     group.add(new THREE.LineSegments(liqEdges,
-      new THREE.LineBasicMaterial({ color: 0x60a879, transparent: true, opacity: 0.5 })))
+      new THREE.LineBasicMaterial({ color: 0x306844, transparent: true, opacity: 0.9 }))) // Increased opacity
 
     // --- Meniscus ring (liquid surface line) ---
     const meniscusR = liquidProfileUniform[1]!.x
@@ -133,7 +133,7 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
     }
     group.add(new THREE.Line(
       new THREE.BufferGeometry().setFromPoints(mPts),
-      new THREE.LineBasicMaterial({ color: 0x60a879, transparent: true, opacity: 0.6 }),
+      new THREE.LineBasicMaterial({ color: 0x306844, transparent: true, opacity: 0.8 }),
     ))
   }
 

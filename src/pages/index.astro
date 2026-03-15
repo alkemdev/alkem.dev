@@ -28,7 +28,7 @@ const posts = (await getCollection('posts'))
   <Hero />
 
   <div class="mx-auto max-w-6xl px-6">
-    <Section title="Projects">
+    <Section title="Code">
       <div class="grid gap-6 md:grid-cols-2">
         {
           projects.map((project) => (
@@ -43,13 +43,13 @@ const posts = (await getCollection('posts'))
         }
       </div>
       <div class="mt-8">
-        <a href="/projects" class="text-sm text-text-dim hover:text-green">
-          View all projects &#8594;
+        <a href="/code" class="text-sm text-text-dim hover:text-green">
+          View all code &#8594;
         </a>
       </div>
     </Section>
 
-    <Section title="Team">
+    <Section title="Info">
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {
           team.map((member) => (

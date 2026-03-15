@@ -7,7 +7,7 @@ uniform float uTime;
 uniform float uOpacity;
 
 const vec3 PURPLE = vec3(0.6, 0.333, 0.733);
-const vec3 GREEN = vec3(0.376, 0.659, 0.475);
+const vec3 GREEN = vec3(0.188, 0.408, 0.267); // Darker, richer green
 const vec3 GOLD = vec3(0.85, 0.75, 0.45);
 const vec3 DEEP_PURPLE = vec3(0.2, 0.08, 0.3);
 
@@ -68,10 +68,10 @@ void main() {
   color += GOLD * smoothstep(0.85, 0.95, spark) * 0.08;
 
   // Alpha: neck nearly invisible, liquid more present
-  float alphaBase = mix(0.07, 0.14, purpleZone);
-  alphaBase = mix(alphaBase, 0.22, inLiquid);
-  alphaBase = mix(alphaBase, 0.04, inNeck);
-  float alpha = (alphaBase + fresnel * 0.1) * uOpacity;
+  float alphaBase = mix(0.2, 0.4, purpleZone);
+  alphaBase = mix(alphaBase, 0.75, inLiquid);
+  alphaBase = mix(alphaBase, 0.15, inNeck);
+  float alpha = (alphaBase + fresnel * 0.25) * uOpacity;
 
   gl_FragColor = vec4(color, alpha);
 }

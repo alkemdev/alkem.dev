@@ -17,23 +17,94 @@ const statusColor: Record<string, string> = {
 ---
 
 <a
-  href={`/projects/${slug}`}
-  class="group block rounded-xl border border-border bg-bg-raised p-6 transition-colors hover:border-purple/50"
+  href={`/code/${slug}`}
+  class="magical-card relative block rounded-xl bg-bg-raised p-[1px] overflow-hidden group h-full transition-all duration-200 ease-out shadow-[0_2px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_10px_30px_rgba(96,168,121,0.08),0_10px_30px_rgba(153,85,187,0.08)]"
 >
-  <div class="mb-2 flex items-center justify-between">
-    <h3 class="text-xl font-bold text-text group-hover:text-purple transition-colors">{title}</h3>
-    <span class:list={['text-xs capitalize', statusColor[status] ?? 'text-text-dim']}>
-      {status}
-    </span>
+  <!-- Glowing Border Element -->
+  <div class="magical-glow absolute top-[-50%] left-[-50%] w-[200%] h-[200%] opacity-0 transition-opacity duration-500 pointer-events-none bg-[conic-gradient(transparent,transparent,transparent,rgba(153,85,187,0.6),rgba(96,168,121,0.6),transparent)]" style="animation: rotate 6s linear infinite;"></div>
+  
+  <!-- Card Content -->
+  <div class="magical-card-inner relative z-10 bg-bg-raised rounded-[11px] h-full p-6 flex flex-col">
+    <div class="mb-2 flex items-center justify-between transition-transform duration-200 ease-out">
+      <h3 class="text-xl font-bold text-text group-hover:text-purple transition-colors">{title}</h3>
+      <span class:list={['text-xs capitalize', statusColor[status] ?? 'text-text-dim']}>
+        {status}
+      </span>
+    </div>
+    <p class="text-sm text-text-dim flex-grow transition-transform duration-200 ease-out">{blurb}</p>
+    {
+      tags.length > 0 && (
+        <div class="mt-4 flex flex-wrap gap-2 transition-transform duration-200 ease-out">
+          {tags.map((tag) => (
+            <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
+          ))}
+        </div>
+      )
+    }
   </div>
-  <p class="text-sm text-text-dim">{blurb}</p>
-  {
-    tags.length > 0 && (
-      <div class="mt-4 flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
-        ))}
-      </div>
-    )
-  }
 </a>
+
+<style>
+  @keyframes rotate {
+    100% { transform: rotate(360deg); }
+  }
+  .magical-card:hover .magical-glow {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Setup 3D tilt effect on client side
+  function setupTilt() {
+    const cards = document.querySelectorAll('.magical-card');
+    
+    cards.forEach(card => {
+      // Skip if already setup
+      if (card.hasAttribute('data-tilt-setup')) return;
+      card.setAttribute('data-tilt-setup', 'true');
+      
+      const el = card as HTMLElement;
+      
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        // Max 4 degrees rotation
+        const rotateX = ((y - centerY) / centerY) * -4;
+        const rotateY = ((x - centerX) / centerX) * 4;
+        
+        el.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+        
+        // Inner elements parallax
+        const inner = el.querySelector('.magical-card-inner') as HTMLElement;
+        if (inner) {
+          inner.style.transformStyle = 'preserve-3d';
+          const children = inner.children;
+          if (children[0]) (children[0] as HTMLElement).style.transform = 'translateZ(15px)';
+          if (children[1]) (children[1] as HTMLElement).style.transform = 'translateZ(5px)';
+          if (children[2]) (children[2] as HTMLElement).style.transform = 'translateZ(10px)';
+        }
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        
+        // Reset inner elements
+        const inner = el.querySelector('.magical-card-inner') as HTMLElement;
+        if (inner) {
+          Array.from(inner.children).forEach(child => {
+            (child as HTMLElement).style.transform = 'translateZ(0px)';
+          });
+        }
+      });
+    });
+  }
+
+  // Run on initial load and view transitions
+  setupTilt();
+  document.addEventListener('astro:page-load', setupTilt);
+</script>

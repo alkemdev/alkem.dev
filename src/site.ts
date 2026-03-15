@@ -18,9 +18,9 @@ export const SITE = {
 } as const
 
 export const NAV_LINKS = [
-  { label: 'Projects', href: '/projects' },
-  { label: 'Team', href: '/team' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Info', href: '/info' },
+  { label: 'Code', href: '/code' },
 ] as const
 
 export const COLORS = {
