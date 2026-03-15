@@ -8,8 +8,15 @@ uniform float uTime;
 void main() {
   vUv = uv;
   vNormal = normalize(normalMatrix * normal);
-  vPosition = position;
-  vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
 
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  vec3 pos = position;
+
+  // Very subtle breathing — sinusoidal pulse along the normal
+  float breath = sin(uTime * 0.4) * 0.003;
+  pos += normal * breath;
+
+  vPosition = pos;
+  vWorldPosition = (modelMatrix * vec4(pos, 1.0)).xyz;
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }
