@@ -115,7 +115,7 @@ export class HeroScene {
     if (orbitGroup) {
       const speed = 0.25
       for (const child of orbitGroup.children) {
-        const { orbit, spinRate, pairA, pairB, solidIndex, positionBuffer, writeIndex, count, maxCount } = child.userData
+        const { orbit, spinRate, pairA, pairB, solidIndex } = child.userData
 
         if (orbit && solidIndex === undefined) {
           const s = t * speed
