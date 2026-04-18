@@ -1,14 +1,13 @@
 ---
 import Page from '@layouts/Page.astro'
 import ProjectCard from '@components/ProjectCard.astro'
+import { SITE } from '@/site'
 import { getCollection } from 'astro:content'
 
-const projects = (await getCollection('projects')).sort(
-  (a, b) => a.data.order - b.data.order,
-)
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order)
 ---
 
-<Page title="Code" description="Open source projects from Alkemical Development.">
+<Page title={SITE.pages.code.title} description={SITE.pages.code.description}>
   <h1 class="mb-10 text-4xl font-bold">Code</h1>
   <div class="grid gap-6 md:grid-cols-2">
     {

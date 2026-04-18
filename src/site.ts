@@ -7,10 +7,28 @@ export const SITE = {
   socials: {
     github: 'https://github.com/alkemdev',
   },
+  wordmark: [
+    { text: 'Alkemical', accent: 'green' },
+    { text: 'Development', accent: 'purple' },
+  ] as const,
+  pages: {
+    blog: {
+      title: 'Blog',
+      description: 'Technical writing from Alkemical Development.',
+    },
+    code: {
+      title: 'Code',
+      description: 'Open source projects from Alkemical Development.',
+    },
+    info: {
+      title: 'Team',
+      description: 'The people behind Alkemical Development.',
+    },
+  },
 } as const
 
 export const NAV_LINKS = [
   { label: 'Blog', href: '/blog' },
-  { label: 'Info', href: '/info' },
+  { label: 'Team', href: '/info' },
   { label: 'Code', href: '/code' },
 ] as const

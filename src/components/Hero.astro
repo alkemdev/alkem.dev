@@ -1,41 +1,89 @@
 ---
 import { SITE } from '@/site'
+import { brand, hexToRgb } from '@/brand/colors'
+
+const pr = hexToRgb(brand.purple)
+const gr = hexToRgb(brand.green)
+
+const fallbackBg = `radial-gradient(ellipse at 30% 50%, rgba(${pr.r},${pr.g},${pr.b},0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(${gr.r},${gr.g},${gr.b},0.15) 0%, transparent 50%), ${brand.bg}`
+
+const purpleRgb = `${pr.r} ${pr.g} ${pr.b}`
+const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
 ---
 
-<section class="relative flex min-h-screen items-center justify-center overflow-hidden" id="hero">
-  <!-- Three.js canvas -->
+<style define:vars={{ purpleRgb, greenRgb }}>
+  /* Use `svh` so mobile address-bar collapse does not retrigger layout
+     (`dvh` recalculates on scroll and causes visible jank). */
+  .hero {
+    min-height: 100svh;
+  }
+  @supports not (height: 100svh) {
+    .hero {
+      min-height: 100vh;
+    }
+  }
+
+  .hero-cta-primary {
+    box-shadow: 0 0 24px rgb(var(--purpleRgb) / 0.25);
+  }
+  .hero-cta-primary:hover {
+    box-shadow: 0 0 32px rgb(var(--purpleRgb) / 0.35);
+  }
+  .hero-cta-secondary:hover {
+    box-shadow: 0 0 20px rgb(var(--greenRgb) / 0.12);
+  }
+</style>
+
+<section
+  class="hero relative flex flex-col items-center justify-center overflow-hidden pb-16 md:pb-20"
+  id="hero"
+  aria-labelledby="hero-title"
+>
   <canvas
     id="hero-canvas"
     class="absolute inset-0 h-full w-full"
-  ></canvas>
+    aria-hidden="true"
+    role="presentation"></canvas>
 
-  <!-- CSS fallback gradient (shown when canvas is not active) -->
   <div
     id="hero-fallback"
     class="absolute inset-0"
-    style="background: radial-gradient(ellipse at 30% 50%, rgba(153,85,187,0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(96,168,121,0.15) 0%, transparent 50%), #0a0a0f;"
+    style={`background: ${fallbackBg}`}
+    aria-hidden="true"
   >
   </div>
 
-  <!-- Text overlay -->
-  <div class="relative z-10 text-center px-6" style="text-shadow: 0 0 20px rgba(10,10,15,0.9), 0 0 40px rgba(10,10,15,0.7);">
-    <h1 class="text-5xl font-bold md:text-7xl" style="text-shadow: 0 2px 30px rgba(10,10,15,0.95), 0 0 60px rgba(10,10,15,0.8);">
-      <span class="text-green">Alkemical</span>
-      <span class="text-purple">Development</span>
+  <div
+    class="relative z-10 flex max-w-3xl flex-col items-center px-6 text-center"
+    style="text-shadow: 0 0 20px rgba(10,10,15,0.9), 0 0 40px rgba(10,10,15,0.7);"
+  >
+    <h1
+      id="hero-title"
+      class="text-5xl font-bold md:text-7xl"
+      style="text-shadow: 0 2px 30px rgba(10,10,15,0.95), 0 0 60px rgba(10,10,15,0.8);"
+    >
+      {
+        SITE.wordmark.map((line, i) => (
+          <span class:list={[line.accent === 'green' ? 'text-green' : 'text-purple']}>
+            {line.text}
+            {i === 0 ? ' ' : ''}
+          </span>
+        ))
+      }
     </h1>
-    <p class="mx-auto mt-6 max-w-xl text-lg text-text-dim md:text-xl">
+    <p class="mt-5 text-base font-medium tracking-wide text-green/90 md:mt-6 md:text-lg">
       {SITE.tagline}
     </p>
-    <div class="mt-10 flex justify-center gap-4">
+    <div class="mt-10 flex flex-wrap justify-center gap-4">
       <a
         href="/code"
-        class="rounded-lg bg-purple px-6 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+        class="hero-cta-primary rounded-lg bg-purple px-6 py-3 text-sm font-bold text-white transition-[opacity,box-shadow,transform] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green active:scale-[0.98]"
       >
         Explore Code
       </a>
       <a
         href="/blog"
-        class="rounded-lg border border-border px-6 py-3 text-sm font-bold text-text transition-colors hover:border-green hover:text-green"
+        class="hero-cta-secondary rounded-lg border border-border bg-bg/40 px-6 py-3 text-sm font-bold text-text backdrop-blur-sm transition-[border-color,color,box-shadow,transform] hover:border-green hover:text-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple active:scale-[0.98]"
       >
         Read the Blog
       </a>
@@ -56,13 +104,18 @@ import { SITE } from '@/site'
       const { initScrollAnimation } = await import('@three/scroll')
       const trigger = initScrollAnimation(scene)
 
-      // Hide the CSS fallback since WebGL is working
       if (fallback) fallback.style.display = 'none'
 
-      document.addEventListener('astro:before-swap', () => {
-        trigger?.kill()
-        scene.dispose()
-      })
+      // `once` pairs each init with exactly one cleanup — no listener accumulation
+      // across view transitions.
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          trigger?.kill()
+          scene.dispose()
+        },
+        { once: true },
+      )
     } catch (e) {
       console.warn('[hero] WebGL init failed, using CSS fallback:', e)
     }
