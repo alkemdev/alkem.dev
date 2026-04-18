@@ -34,14 +34,30 @@
   html {
     background: var(--color-bg);
     color: var(--color-text);
+    color-scheme: dark;
     font-family: var(--font-sans);
     scroll-behavior: smooth;
+    /* Stop iOS from resizing text when the device is rotated. */
+    -webkit-text-size-adjust: 100%;
+    /* Belt-and-suspenders against horizontal overflow from any decorative
+       element leaking beyond the viewport on narrow screens. */
+    overflow-x: clip;
   }
 
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
+  }
+
+  /* Interactive elements: drop the iOS tap flash and kill the 300ms
+     click delay on older mobile browsers. Buttons/links have their own
+     hover/active feedback already. */
+  a,
+  button,
+  [role='button'] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   /* Ambient gradient on its own compositing layer — avoids `background-attachment: fixed`

@@ -5,9 +5,10 @@ const pathname = Astro.url.pathname
 
 const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
 
-const linkClass = (href: string) =>
+const linkClass = (href: string, size: 'sm' | 'md' = 'sm') =>
   [
-    'rounded-md px-2 py-1.5 text-sm transition-colors',
+    'rounded-md transition-colors',
+    size === 'sm' ? 'px-2 py-1.5 text-sm' : 'px-3 py-3 text-base',
     isActive(href) ? 'text-green' : 'text-text-dim hover:text-text',
   ] as const
 ---
@@ -16,13 +17,13 @@ const linkClass = (href: string) =>
   class="nav-fixed fixed top-0 z-50 w-full border-b border-border/50 bg-bg/80 backdrop-blur-md"
   aria-label="Primary"
 >
-  <div class="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+  <div class="relative mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-6">
     <a
       href="/"
-      class="flex items-center gap-2 rounded-md text-text outline-offset-4 hover:text-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-green"
+      class="flex min-w-0 items-center gap-2 rounded-md text-text outline-offset-4 hover:text-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-green"
     >
-      <img src="/images/flask.svg" alt="" width="32" height="32" class="h-8 w-8" />
-      <span class="text-lg font-bold">{SITE.name}</span>
+      <img src="/images/flask.svg" alt="" width="32" height="32" class="h-8 w-8 shrink-0" />
+      <span class="truncate text-lg font-bold">{SITE.name}</span>
     </a>
 
     <div class="hidden items-center gap-2 md:flex">
@@ -42,7 +43,7 @@ const linkClass = (href: string) =>
     <button
       type="button"
       id="nav-menu-btn"
-      class="inline-flex items-center justify-center rounded-lg border border-border p-2 text-text-dim hover:border-green hover:text-text md:hidden"
+      class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border text-text-dim hover:border-green hover:text-text md:hidden"
       aria-expanded="false"
       aria-controls="mobile-nav"
       aria-label="Open menu"
@@ -68,7 +69,7 @@ const linkClass = (href: string) =>
       NAV_LINKS.map((link) => (
         <a
           href={link.href}
-          class:list={[...linkClass(link.href), 'py-2']}
+          class:list={linkClass(link.href, 'md')}
           aria-current={isActive(link.href) ? 'page' : undefined}
         >
           {link.label}

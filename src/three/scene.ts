@@ -29,7 +29,10 @@ export class HeroScene {
       antialias: true,
       alpha: true,
     })
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // Lower DPR cap on narrow viewports — Three + bloom on a high-DPR
+    // phone (e.g., DPR 3) is enough to stutter on low-end devices.
+    const narrow = window.innerWidth < 640
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, narrow ? 1.5 : 2))
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
     this.renderer.toneMappingExposure = 1.0
 
