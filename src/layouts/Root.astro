@@ -59,5 +59,8 @@ const canonicalUrl = new URL(Astro.url.pathname, SITE.url)
   </head>
   <body class="min-h-screen bg-bg text-text antialiased">
     <slot />
+    <script>
+      import '@/scripts/magical-card-tilt.ts'
+    </script>
   </body>
 </html>
