@@ -38,6 +38,49 @@
     scroll-behavior: smooth;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Ambient gradient on its own compositing layer — avoids `background-attachment: fixed`
+     repaints (flickers on mobile WebKit during momentum scroll). */
+  body {
+    position: relative;
+    isolation: isolate;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        ellipse 120% 80% at 50% -30%,
+        color-mix(in srgb, var(--color-purple) 12%, transparent),
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 90% 60% at 100% 50%,
+        color-mix(in srgb, var(--color-green) 6%, transparent),
+        transparent 45%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 0% 80%,
+        color-mix(in srgb, var(--color-purple) 5%, transparent),
+        transparent 40%
+      );
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  #main-content {
+    scroll-margin-top: 5rem;
+  }
+
   ::selection {
     background: color-mix(in srgb, var(--color-purple) 40%, transparent);
   }
@@ -50,5 +93,13 @@
 
   a:hover {
     color: var(--color-purple);
+  }
+
+  nav[aria-label='Primary'] a:focus-visible,
+  #hero a:focus-visible,
+  #main-content a:focus-visible,
+  footer a:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-green) 85%, white);
+    outline-offset: 3px;
   }
 }

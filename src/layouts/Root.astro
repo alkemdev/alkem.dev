@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions'
+import SkipLink from '@components/SkipLink.astro'
 import { SITE } from '@/site'
 import '@/styles/global.css'
 
@@ -9,11 +10,7 @@ interface Props {
   image?: string | undefined
 }
 
-const {
-  title = SITE.name,
-  description = SITE.description,
-  image = '/og.png',
-} = Astro.props
+const { title = SITE.name, description = SITE.description, image = '/og.png' } = Astro.props
 
 const pageTitle = title === SITE.name ? title : `${title} | ${SITE.name}`
 const canonicalUrl = new URL(Astro.url.pathname, SITE.url)
@@ -26,12 +23,7 @@ const canonicalUrl = new URL(Astro.url.pathname, SITE.url)
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={SITE.name}
-      href="/rss.xml"
-    />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
     <link rel="canonical" href={canonicalUrl} />
 
     <title>{pageTitle}</title>
@@ -57,7 +49,8 @@ const canonicalUrl = new URL(Astro.url.pathname, SITE.url)
 
     <ClientRouter />
   </head>
-  <body class="min-h-screen bg-bg text-text antialiased">
+  <body class="relative min-h-screen bg-bg text-text antialiased">
+    <SkipLink />
     <slot />
     <script>
       import '@/scripts/magical-card-tilt.ts'

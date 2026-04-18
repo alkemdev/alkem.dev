@@ -14,7 +14,7 @@ const { title, description, image } = Astro.props
 
 <Root title={title} description={description} image={image}>
   <Nav />
-  <main class="mx-auto max-w-6xl px-6 pt-24 pb-16">
+  <main id="main-content" tabindex="-1" class="mx-auto max-w-6xl px-6 pt-24 pb-16 outline-none">
     <slot />
   </main>
   <Footer />
