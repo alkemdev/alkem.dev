@@ -35,8 +35,9 @@ src/
   data/           Content collections (posts/, projects/, team.json)
   layouts/        Page shells (Root, Page, Post)
   pages/          File-based routing
-  site.ts         Site metadata, nav links, brand colors
-  styles/         Global CSS + Tailwind theme
+  site.ts         Site metadata, nav, copy (see `src/brand/` for palette)
+  brand/          tokens.json + colors.ts (Tailwind theme is generated)
+  styles/         Global CSS, fonts, generated `brand-theme.css`
   three/          Three.js hero scene
     geometry.ts     Flask mesh built from SVG logo coordinates
     scene.ts        Orthographic camera, bloom, animation loop
@@ -90,31 +91,24 @@ See [`infra/cloudflare/README.md`](infra/cloudflare/README.md) for setup.
 
 ## Branding
 
-Brand colors are defined in two places:
+**Single source:** edit [`src/brand/tokens.json`](src/brand/tokens.json) (palette keys match Tailwind: `purple`, `green`, `bg`, `bg-raised`, `text`, `text-dim`, `border`).
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| `purple` | `#9955BB` | Primary accent, links on hover, wireframe |
-| `green` | `#60A879` | Secondary accent, active links, liquid fill |
-| `bg` | `#0A0A0F` | Page background |
-| `bg-raised` | `#13131A` | Card / raised surface background |
-| `text` | `#E8E6E3` | Body text |
-| `text-dim` | `#8A8A9A` | Muted text |
-| `border` | `#2A2A3A` | Borders and dividers |
+Then run **`npm run sync:brand`** (also runs automatically before `npm run dev` / `npm run build`) to regenerate [`src/styles/brand-theme.css`](src/styles/brand-theme.css) for the Tailwind `@theme` color tokens.
 
-- CSS: `src/styles/global.css` (Tailwind `@theme` block)
-- TypeScript: `src/site.ts` (`COLORS` export)
+- **Runtime / Three.js:** import from [`src/brand/colors.ts`](src/brand/colors.ts) (`brand`, `hexToThree`, etc.).
+- **Voice & page titles:** [`src/site.ts`](src/site.ts) (`SITE.description`, `SITE.tagline`).
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server with HMR |
-| `npm run build` | Type-check + production build to `dist/` |
-| `npm run preview` | Preview the production build locally |
-| `npm run check` | Run Astro TypeScript diagnostics |
-| `npm run format` | Format all files with Prettier |
-| `npm run format:check` | Check formatting without writing |
+| Command                | Description                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `npm run sync:brand`   | Regenerate `brand-theme.css` from `tokens.json` (also runs before dev/build) |
+| `npm run dev`          | Start dev server with HMR                                                    |
+| `npm run build`        | Type-check + production build to `dist/`                                     |
+| `npm run preview`      | Preview the production build locally                                         |
+| `npm run check`        | Run Astro TypeScript diagnostics                                             |
+| `npm run format`       | Format all files with Prettier                                               |
+| `npm run format:check` | Check formatting without writing                                             |
 
 ## License
 

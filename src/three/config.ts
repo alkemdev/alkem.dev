@@ -3,6 +3,8 @@
  * Single source of truth for materializing the 3D hero (flask + orbits, etc.).
  */
 
+import { brand, hexToThree } from '@/brand/colors'
+
 export type WireframeStyle = 'full' | 'triangular'
 // 'full' = all edges above angle threshold (current behavior)
 // 'triangular' = fewer radial segments + higher edge angle so facets read as triangles
@@ -70,7 +72,7 @@ export interface SceneConfig {
 
 const defaultOrbits: OrbitsConfig = {
   cometScale: 1.95,
-  platonicColors: [0x9955bb, 0x4a9fd4, 0x60b890, 0xd9a040, 0xc97060],
+  platonicColors: [hexToThree(brand.purple), 0x4a9fd4, 0x60b890, 0xd9a040, 0xc97060],
   trailRibbonWidth: 0.065,
   trailRibbonOpacity: 0.42,
   trailGlowWidth: 0.11,

@@ -11,6 +11,10 @@ npm run dev
 
 The dev server starts at `http://localhost:4321` with hot reload.
 
+## Brand colors
+
+Palette lives in `src/brand/tokens.json`. After editing it, run `npm run sync:brand` (or rely on `predev` / `prebuild`, which run it automatically) so `src/styles/brand-theme.css` stays in sync with Tailwind.
+
 ## Adding content
 
 ### Blog post
@@ -37,10 +41,10 @@ Create `src/data/projects/your-project.mdx`:
 ---
 title: 'Project Name'
 blurb: 'Short description.'
-status: 'active'           # active | completed | planned
+status: 'active' # active | completed | planned
 repo: 'https://github.com/alkemdev/repo'
 tags: ['rust', 'wasm']
-order: 3                    # controls display order (lower = first)
+order: 3 # controls display order (lower = first)
 ---
 
 Longer description in MDX.

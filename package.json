@@ -6,6 +6,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "sync:brand": "node scripts/sync-brand-css.mjs",
+    "predev": "npm run sync:brand",
+    "prebuild": "npm run sync:brand",
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",

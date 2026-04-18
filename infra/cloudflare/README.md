@@ -6,10 +6,10 @@ Manages DNS and custom domain binding for `alkem.dev` using
 
 ## What Terraform manages
 
-| Resource | Purpose |
-|----------|---------|
-| `cloudflare_dns_record.apex` | CNAME `alkem.dev` → `alkem-dev.pages.dev` |
-| `cloudflare_pages_domain.apex` | Binds `alkem.dev` to the Pages project |
+| Resource                       | Purpose                                   |
+| ------------------------------ | ----------------------------------------- |
+| `cloudflare_dns_record.apex`   | CNAME `alkem.dev` → `alkem-dev.pages.dev` |
+| `cloudflare_pages_domain.apex` | Binds `alkem.dev` to the Pages project    |
 
 ## What Terraform does NOT manage
 
@@ -52,11 +52,11 @@ uses an OAuth flow that cannot be done through the API.
 
 ## Files
 
-| File | Tracked | Purpose |
-|------|---------|---------|
-| `main.tf` | Yes | Resource definitions |
-| `terraform.tfvars.example` | Yes | Template for variables |
-| `terraform.tfvars` | No (gitignored) | Actual variable values |
-| `.terraform.lock.hcl` | Yes | Provider version lock |
-| `.terraform/` | No (gitignored) | Provider binaries |
-| `*.tfstate` | No (gitignored) | State files |
+| File                       | Tracked         | Purpose                |
+| -------------------------- | --------------- | ---------------------- |
+| `main.tf`                  | Yes             | Resource definitions   |
+| `terraform.tfvars.example` | Yes             | Template for variables |
+| `terraform.tfvars`         | No (gitignored) | Actual variable values |
+| `.terraform.lock.hcl`      | Yes             | Provider version lock  |
+| `.terraform/`              | No (gitignored) | Provider binaries      |
+| `*.tfstate`                | No (gitignored) | State files            |

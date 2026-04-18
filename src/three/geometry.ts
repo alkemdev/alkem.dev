@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { brand, hexToThree } from '@/brand/colors'
 import vertexShader from './shaders/vertex.glsl?raw'
 import fragmentShader from './shaders/fragment.glsl?raw'
 import trailLineVert from './shaders/trailLine.vert.glsl?raw'
@@ -22,7 +23,10 @@ export interface FractalUniforms {
   uOpacity: THREE.IUniform<number>
 }
 
-export function createFractalGeometry(config: SceneConfig = defaultSceneConfig): { group: THREE.Group; uniforms: FractalUniforms } {
+export function createFractalGeometry(config: SceneConfig = defaultSceneConfig): {
+  group: THREE.Group
+  uniforms: FractalUniforms
+} {
   const group = new THREE.Group()
   const cfg = config.flask
 
@@ -69,36 +73,57 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
   const verts = extractUniqueVertices(flatFlask)
   const vGeo = new THREE.BufferGeometry()
   vGeo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3))
-  group.add(new THREE.Points(vGeo.clone(), new THREE.PointsMaterial({
-    color: 0xcc99ee,
-    size: 0.045,
-    transparent: true,
-    opacity: 1,
-    sizeAttenuation: true,
-  })))
+  group.add(
+    new THREE.Points(
+      vGeo.clone(),
+      new THREE.PointsMaterial({
+        color: 0xcc99ee,
+        size: 0.045,
+        transparent: true,
+        opacity: 1,
+        sizeAttenuation: true,
+      }),
+    ),
+  )
   if (cfg.vertexHaloSize > 0) {
-    group.add(new THREE.Points(vGeo.clone(), new THREE.PointsMaterial({
-      color: 0x88ddaa,
-      size: cfg.vertexHaloSize,
-      transparent: true,
-      opacity: cfg.vertexHaloOpacity,
-      sizeAttenuation: true,
-    })))
+    group.add(
+      new THREE.Points(
+        vGeo.clone(),
+        new THREE.PointsMaterial({
+          color: 0x88ddaa,
+          size: cfg.vertexHaloSize,
+          transparent: true,
+          opacity: cfg.vertexHaloOpacity,
+          sizeAttenuation: true,
+        }),
+      ),
+    )
   }
-  group.add(new THREE.Points(vGeo, new THREE.PointsMaterial({
-    color: 0x88ddaa,
-    size: cfg.vertexSize,
-    transparent: true,
-    opacity: cfg.vertexOpacity,
-    sizeAttenuation: true,
-  })))
+  group.add(
+    new THREE.Points(
+      vGeo,
+      new THREE.PointsMaterial({
+        color: 0x88ddaa,
+        size: cfg.vertexSize,
+        transparent: true,
+        opacity: cfg.vertexOpacity,
+        sizeAttenuation: true,
+      }),
+    ),
+  )
 
   // --- Collar / lip ring at neck top ---
   if (cfg.showCollar) {
     const collarGeo = new THREE.TorusGeometry(0.297, 0.02, 6, horizontalSegments)
     const collarEdges = new THREE.EdgesGeometry(collarGeo)
-    const collar = new THREE.LineSegments(collarEdges,
-      new THREE.LineBasicMaterial({ color: 0xaa66cc, transparent: true, opacity: cfg.wireframeOpacity }))
+    const collar = new THREE.LineSegments(
+      collarEdges,
+      new THREE.LineBasicMaterial({
+        color: 0xaa66cc,
+        transparent: true,
+        opacity: cfg.wireframeOpacity,
+      }),
+    )
     collar.position.y = 1.43
     collar.rotation.x = Math.PI / 2
     group.add(collar)
@@ -112,15 +137,24 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
     const liquidProfileUniform = resampleProfileByArcLength(liquidProfile, liquidNumRings)
     const liquidGeo = buildRegularGridLathe(liquidProfileUniform, horizontalSegments)
     const flatLiquid = toFlatShaded(liquidGeo)
-    group.add(new THREE.Mesh(flatLiquid, new THREE.MeshBasicMaterial({
-      color: 0x306844, // Darker green
-      transparent: true,
-      opacity: 0.25, // Reduced opacity slightly from 0.35
-      side: THREE.DoubleSide,
-    })))
+    group.add(
+      new THREE.Mesh(
+        flatLiquid,
+        new THREE.MeshBasicMaterial({
+          color: 0x306844, // Darker green
+          transparent: true,
+          opacity: 0.25, // Reduced opacity slightly from 0.35
+          side: THREE.DoubleSide,
+        }),
+      ),
+    )
     const liqEdges = new THREE.EdgesGeometry(flatLiquid, cfg.wireframeAngleThreshold)
-    group.add(new THREE.LineSegments(liqEdges,
-      new THREE.LineBasicMaterial({ color: 0x306844, transparent: true, opacity: 0.8 }))) // Reduced from 0.9
+    group.add(
+      new THREE.LineSegments(
+        liqEdges,
+        new THREE.LineBasicMaterial({ color: 0x306844, transparent: true, opacity: 0.8 }),
+      ),
+    ) // Reduced from 0.9
 
     // --- Meniscus ring (liquid surface line) ---
     const meniscusR = liquidProfileUniform[1]!.x
@@ -131,10 +165,12 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
       const a = (i / meniscusSegs) * Math.PI * 2
       mPts.push(new THREE.Vector3(Math.cos(a) * meniscusR, meniscusY, Math.sin(a) * meniscusR))
     }
-    group.add(new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(mPts),
-      new THREE.LineBasicMaterial({ color: 0x306844, transparent: true, opacity: 0.8 }),
-    ))
+    group.add(
+      new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(mPts),
+        new THREE.LineBasicMaterial({ color: 0x306844, transparent: true, opacity: 0.8 }),
+      ),
+    )
   }
 
   // --- All 5 Platonic solids on mathematical orbits ---
@@ -147,42 +183,96 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
     geo: THREE.BufferGeometry
     color: number
     size: number
-    orbit: { a: number; b: number; c: number; freqX: number; freqY: number; freqZ: number; phaseY: number; phaseZ: number }
+    orbit: {
+      a: number
+      b: number
+      c: number
+      freqX: number
+      freqY: number
+      freqZ: number
+      phaseY: number
+      phaseZ: number
+    }
     spinRate: number
   }[] = [
     {
       geo: new THREE.TetrahedronGeometry(0.07, 0),
       color: colors[0],
       size: 0.07,
-      orbit: { a: 2.2, b: 0.5, c: 1.9, freqX: 3, freqY: 5, freqZ: 2, phaseY: Math.PI / 2, phaseZ: Math.PI / 4 },
+      orbit: {
+        a: 2.2,
+        b: 0.5,
+        c: 1.9,
+        freqX: 3,
+        freqY: 5,
+        freqZ: 2,
+        phaseY: Math.PI / 2,
+        phaseZ: Math.PI / 4,
+      },
       spinRate: 1.1,
     },
     {
       geo: new THREE.BoxGeometry(0.09, 0.09, 0.09),
       color: colors[1],
       size: 0.09,
-      orbit: { a: 2.5, b: 0.6, c: 2.2, freqX: 2, freqY: 3, freqZ: 2, phaseY: 0, phaseZ: Math.PI / 2 },
+      orbit: {
+        a: 2.5,
+        b: 0.6,
+        c: 2.2,
+        freqX: 2,
+        freqY: 3,
+        freqZ: 2,
+        phaseY: 0,
+        phaseZ: Math.PI / 2,
+      },
       spinRate: -0.6,
     },
     {
       geo: new THREE.OctahedronGeometry(0.065, 0),
       color: colors[2],
       size: 0.065,
-      orbit: { a: 1.9, b: 0.75, c: 1.7, freqX: 4, freqY: 2, freqZ: 3, phaseY: Math.PI / 3, phaseZ: -Math.PI / 6 },
+      orbit: {
+        a: 1.9,
+        b: 0.75,
+        c: 1.7,
+        freqX: 4,
+        freqY: 2,
+        freqZ: 3,
+        phaseY: Math.PI / 3,
+        phaseZ: -Math.PI / 6,
+      },
       spinRate: 0.8,
     },
     {
       geo: new THREE.DodecahedronGeometry(0.06, 0),
       color: colors[3],
       size: 0.06,
-      orbit: { a: 2.4, b: 0.45, c: 2.0, freqX: 1, freqY: 4, freqZ: 3, phaseY: Math.PI * 0.7, phaseZ: Math.PI / 6 },
+      orbit: {
+        a: 2.4,
+        b: 0.45,
+        c: 2.0,
+        freqX: 1,
+        freqY: 4,
+        freqZ: 3,
+        phaseY: Math.PI * 0.7,
+        phaseZ: Math.PI / 6,
+      },
       spinRate: -0.5,
     },
     {
       geo: new THREE.IcosahedronGeometry(0.055, 0),
       color: colors[4],
       size: 0.055,
-      orbit: { a: 1.7, b: 0.85, c: 1.8, freqX: 5, freqY: 3, freqZ: 4, phaseY: Math.PI / 5, phaseZ: Math.PI / 3 },
+      orbit: {
+        a: 1.7,
+        b: 0.85,
+        c: 1.8,
+        freqX: 5,
+        freqY: 3,
+        freqZ: 4,
+        phaseY: Math.PI / 5,
+        phaseZ: Math.PI / 3,
+      },
       spinRate: 1.2,
     },
   ]
@@ -193,11 +283,22 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
     const solidGroup = new THREE.Group()
     solidGroup.scale.setScalar(cometScale)
     const edges = new THREE.EdgesGeometry(p.geo)
-    const wireframe = new THREE.LineSegments(edges,
-      new THREE.LineBasicMaterial({ color: p.color, transparent: true, opacity: 0.75, depthWrite: true }))
+    const wireframe = new THREE.LineSegments(
+      edges,
+      new THREE.LineBasicMaterial({
+        color: p.color,
+        transparent: true,
+        opacity: 0.75,
+        depthWrite: true,
+      }),
+    )
     solidGroup.add(wireframe)
     const faceMat = new THREE.MeshBasicMaterial({
-      color: p.color, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: true,
+      color: p.color,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: true,
     })
     solidGroup.add(new THREE.Mesh(p.geo.clone(), faceMat))
     solidGroup.userData = { orbit: p.orbit, spinRate: p.spinRate }
@@ -206,9 +307,14 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
 
   // Connection lines between dual pairs (updated each frame)
   const connectionMat = new THREE.LineBasicMaterial({
-    color: 0x555577, transparent: true, opacity: 0.18,
+    color: 0x555577,
+    transparent: true,
+    opacity: 0.18,
   })
-  const dualPairs = [[1, 2], [3, 4]]
+  const dualPairs = [
+    [1, 2],
+    [3, 4],
+  ]
   for (const [i, j] of dualPairs) {
     const lineGeo = new THREE.BufferGeometry()
     lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(6), 3))
@@ -248,8 +354,14 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
     const trailLine = new THREE.Line(trailGeo, trailLineMat)
 
     const trailPointsGeo = new THREE.BufferGeometry()
-    trailPointsGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((TRAIL_LENGTH + 1) * 3), 3))
-    trailPointsGeo.setAttribute('trailT', new THREE.BufferAttribute(new Float32Array(TRAIL_LENGTH + 1), 1))
+    trailPointsGeo.setAttribute(
+      'position',
+      new THREE.BufferAttribute(new Float32Array((TRAIL_LENGTH + 1) * 3), 3),
+    )
+    trailPointsGeo.setAttribute(
+      'trailT',
+      new THREE.BufferAttribute(new Float32Array(TRAIL_LENGTH + 1), 1),
+    )
     trailPointsGeo.setDrawRange(0, 0)
     const trailPointsMat = new THREE.ShaderMaterial({
       vertexShader: trailPointVert,
@@ -349,7 +461,7 @@ export function createFractalGeometry(config: SceneConfig = defaultSceneConfig):
   ;(group as any)._orbitGroup = orbitGroup
 
   // --- Particle dust ---
-  group.add(makeParticleCloud(250, 2.0, 3.0, 0x9955bb, 0.015, 0.4))
+  group.add(makeParticleCloud(250, 2.0, 3.0, hexToThree(brand.purple), 0.015, 0.4))
   group.add(makeParticleCloud(100, 1.0, 0.8, 0x60a879, 0.012, 0.3, -0.3))
 
   return { group, uniforms }
@@ -364,10 +476,7 @@ function subdivideProfile(profile: THREE.Vector2[], segmentsPerSpan: number): TH
     const b = profile[i + 1]!
     for (let k = 0; k < segmentsPerSpan; k++) {
       const t = k / segmentsPerSpan
-      out.push(new THREE.Vector2(
-        a.x + (b.x - a.x) * t,
-        a.y + (b.y - a.y) * t,
-      ))
+      out.push(new THREE.Vector2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t))
     }
   }
   out.push(profile[profile.length - 1]!)
@@ -390,9 +499,7 @@ function resampleProfileByArcLength(profile: THREE.Vector2[], numPoints: number)
     const s = (k / (numPoints - 1)) * total
     let i = 0
     while (i < lengths.length - 1 && lengths[i + 1]! < s) i++
-    const t = i < lengths.length - 1
-      ? (s - lengths[i]!) / (lengths[i + 1]! - lengths[i]!)
-      : 1
+    const t = i < lengths.length - 1 ? (s - lengths[i]!) / (lengths[i + 1]! - lengths[i]!) : 1
     const a = profile[i]!
     const b = profile[Math.min(i + 1, profile.length - 1)]!
     out.push(new THREE.Vector2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t))
@@ -401,8 +508,12 @@ function resampleProfileByArcLength(profile: THREE.Vector2[], numPoints: number)
 }
 
 /** Regular M×N grid lathe: one vertex per (ring, angle). No variable n, no jitter — robust geometry. */
-function buildRegularGridLathe(profile: THREE.Vector2[], radialSegments: number): THREE.BufferGeometry {
-  if (profile.length < 2 || radialSegments < 3) return new THREE.LatheGeometry(profile, radialSegments, 0, Math.PI * 2)
+function buildRegularGridLathe(
+  profile: THREE.Vector2[],
+  radialSegments: number,
+): THREE.BufferGeometry {
+  if (profile.length < 2 || radialSegments < 3)
+    return new THREE.LatheGeometry(profile, radialSegments, 0, Math.PI * 2)
   const M = profile.length
   const N = radialSegments
   const positions: number[] = []
@@ -457,36 +568,34 @@ function buildFlaskProfileFromSVG(): THREE.Vector2[] {
   const rawPoints: [number, number][] = [
     // Collar / lip — 5% wider, lower
     [0.01, 3.0],
-    [9.50, 3.0],
+    [9.5, 3.0],
     [10.28, 3.2],
-    [9.50, 3.4],
+    [9.5, 3.4],
     // Neck
-    [9.50, 3.8],
-    [9.50, 4.5],
-    [9.50, 5.2],
-    [9.50, 5.8],
+    [9.5, 3.8],
+    [9.5, 4.5],
+    [9.5, 5.2],
+    [9.5, 5.8],
     // Shoulder
-    [10.50, 6.05],
-    [12.50, 6.4],
+    [10.5, 6.05],
+    [12.5, 6.4],
     // Sides — slightly less steep
-    [17.00, 7.2],
-    [21.50, 8.0],
-    [26.00, 9.0],
+    [17.0, 7.2],
+    [21.5, 8.0],
+    [26.0, 9.0],
     // Wide flat base (same as before)
-    [32.00, 11.0],
-    [32.00, 12.0],
-    [32.00, 12.8],
+    [32.0, 11.0],
+    [32.0, 12.0],
+    [32.0, 12.8],
     // Base curves under
-    [31.00, 13.3],
-    [28.30, 13.8],
-    [22.40, 14.2],
-    [12.80, 14.5],
+    [31.0, 13.3],
+    [28.3, 13.8],
+    [22.4, 14.2],
+    [12.8, 14.5],
     [0.01, 14.65],
   ]
 
-  return rawPoints.map(([r, y]) =>
-    new THREE.Vector2(r * rScale, mapY(y))
-  )
+  return rawPoints.map(([r, y]) => new THREE.Vector2(r * rScale, mapY(y)))
 }
 
 function buildLiquidProfile(): THREE.Vector2[] {
@@ -502,26 +611,29 @@ function buildLiquidProfile(): THREE.Vector2[] {
   const inset = 0.04
   const rawPoints: [number, number][] = [
     [0.01, 9.5],
-    [21.00, 9.5],     // liquid surface lower
-    [26.00, 10.0],
-    [31.90, 11.0],
-    [31.90, 12.0],
-    [31.90, 12.8],
-    [30.90, 13.3],
-    [28.20, 13.8],
-    [22.30, 14.2],
-    [12.70, 14.45],
+    [21.0, 9.5], // liquid surface lower
+    [26.0, 10.0],
+    [31.9, 11.0],
+    [31.9, 12.0],
+    [31.9, 12.8],
+    [30.9, 13.3],
+    [28.2, 13.8],
+    [22.3, 14.2],
+    [12.7, 14.45],
     [0.01, 14.6],
   ]
 
-  return rawPoints.map(([r, y]) =>
-    new THREE.Vector2(Math.max(0.01, r * rScale - inset), mapY(y))
-  )
+  return rawPoints.map(([r, y]) => new THREE.Vector2(Math.max(0.01, r * rScale - inset), mapY(y)))
 }
 
 function makeParticleCloud(
-  count: number, rMin: number, rRange: number,
-  color: number, size: number, opacity: number, yOffset = 0,
+  count: number,
+  rMin: number,
+  rRange: number,
+  color: number,
+  size: number,
+  opacity: number,
+  yOffset = 0,
 ): THREE.Points {
   const pos = new Float32Array(count * 3)
   for (let i = 0; i < count; i++) {
@@ -534,9 +646,16 @@ function makeParticleCloud(
   }
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
-  return new THREE.Points(geo, new THREE.PointsMaterial({
-    color, size, transparent: true, opacity, sizeAttenuation: true,
-  }))
+  return new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({
+      color,
+      size,
+      transparent: true,
+      opacity,
+      sizeAttenuation: true,
+    }),
+  )
 }
 
 function toFlatShaded(geometry: THREE.BufferGeometry): THREE.BufferGeometry {

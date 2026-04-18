@@ -53,11 +53,11 @@ slightly down.
 
 The fragment shader divides the flask into three zones based on `vPosition.y`:
 
-| Zone | Y range | Color |
-|------|---------|-------|
-| Neck (glass) | Above 0.84 | Deep purple, very transparent |
-| Shoulder (purple liquid) | 0.42 – 0.84 | Swirling purple |
-| Body (green liquid) | Below 0.42 | Bright green with bubbles |
+| Zone                     | Y range     | Color                         |
+| ------------------------ | ----------- | ----------------------------- |
+| Neck (glass)             | Above 0.84  | Deep purple, very transparent |
+| Shoulder (purple liquid) | 0.42 – 0.84 | Swirling purple               |
+| Body (green liquid)      | Below 0.42  | Bright green with bubbles     |
 
 Fresnel rim lighting adds edge glow, and a noise-based sparkle adds
 subtle gold highlights.
