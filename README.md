@@ -15,16 +15,17 @@ npm run dev        # http://localhost:4321
 
 ## Stack
 
-| Layer | Tool | Notes |
-|-------|------|-------|
-| Framework | Astro 5 | Static output, islands architecture |
-| Styling | Tailwind CSS 4 | CSS-only config via `@theme` |
-| 3D | Three.js + GLSL | Polyhedral flask hero with bloom post-processing |
-| Content | MDX + Astro Content Collections | Blog posts, projects, team |
-| Math | KaTeX via remark-math / rehype-katex | LaTeX in MDX |
-| Code blocks | astro-expressive-code | github-dark theme |
-| Infra | OpenTofu + Cloudflare provider v5 | DNS + custom domain |
-| Hosting | Cloudflare Pages | Auto-deploy on push to `main` |
+| Layer       | Tool                                 | Notes                                            |
+| ----------- | ------------------------------------ | ------------------------------------------------ |
+| Runtime     | Node.js 22.12+                       | Required by Astro 6                              |
+| Framework   | Astro 6                              | Static output, Vite 7, Content Layer collections |
+| Styling     | Tailwind CSS 4                       | CSS-only config via `@theme`                     |
+| 3D          | Three.js + GLSL                      | Polyhedral flask hero with bloom post-processing |
+| Content     | MDX + Astro Content Collections      | Blog posts, projects, team                       |
+| Math        | KaTeX via remark-math / rehype-katex | LaTeX in MDX                                     |
+| Code blocks | astro-expressive-code                | github-dark theme                                |
+| Infra       | OpenTofu + Cloudflare provider v5    | DNS + custom domain                              |
+| Hosting     | Cloudflare Pages                     | Auto-deploy on push to `main`                    |
 
 ## Project structure
 
@@ -84,6 +85,8 @@ GitHub integration / auto-deploy). Terraform manages only:
 - Custom domain binding on the Pages project
 
 See [`infra/cloudflare/README.md`](infra/cloudflare/README.md) for setup.
+
+**Node version:** Astro 6 requires Node **22.12+**. On Cloudflare Pages, set the environment variable `NODE_VERSION` to `22` (or match `.nvmrc`) so builds use a compatible runtime.
 
 ## Branding
 

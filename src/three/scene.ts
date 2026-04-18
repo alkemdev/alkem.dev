@@ -15,7 +15,7 @@ export class HeroScene {
 
   private composer: EffectComposer
   private animationId = 0
-  private clock = new THREE.Clock()
+  private timer = new THREE.Timer()
   private resizeObserver: ResizeObserver
   private mouseX = 0
   private mouseY = 0
@@ -39,11 +39,7 @@ export class HeroScene {
     const rect = canvas.getBoundingClientRect()
     const aspect = rect.width / rect.height
     const half = this.frustumSize / 2
-    this.camera = new THREE.OrthographicCamera(
-      -half * aspect, half * aspect,
-      half, -half,
-      0.1, 100,
-    )
+    this.camera = new THREE.OrthographicCamera(-half * aspect, half * aspect, half, -half, 0.1, 100)
     // Isometric-ish angle: elevated, looking down
     this.camera.position.set(0, 2.5, 6)
     this.camera.lookAt(0, 0, 0)
@@ -56,12 +52,7 @@ export class HeroScene {
     // Post-processing
     this.composer = new EffectComposer(this.renderer)
     this.composer.addPass(new RenderPass(this.scene, this.camera))
-    const bloom = new UnrealBloomPass(
-      new THREE.Vector2(rect.width, rect.height),
-      0.3,
-      0.7,
-      0.65,
-    )
+    const bloom = new UnrealBloomPass(new THREE.Vector2(rect.width, rect.height), 0.3, 0.7, 0.65)
     this.composer.addPass(bloom)
     this.composer.addPass(new OutputPass())
 
@@ -92,6 +83,10 @@ export class HeroScene {
     window.addEventListener('mousemove', onMouseMove, { passive: true })
     this._cleanupMouse = () => window.removeEventListener('mousemove', onMouseMove)
 
+    // Auto-pause time advancement while the tab is hidden — saves battery
+    // and prevents a big frame-time jump when returning to the page.
+    this.timer.connect(document)
+
     this.animate()
   }
 
@@ -100,7 +95,8 @@ export class HeroScene {
   private animate = () => {
     this.animationId = requestAnimationFrame(this.animate)
 
-    const t = this.clock.getElapsedTime()
+    this.timer.update()
+    const t = this.timer.getElapsed()
     this.uniforms.uTime.value = t
 
     this.mouseX += (this.targetMouseX - this.mouseX) * 0.04
@@ -179,7 +175,12 @@ export class HeroScene {
           const posAttr = child.geometry.getAttribute('position') as THREE.BufferAttribute
           const tAttr = child.userData.tBuffer as THREE.BufferAttribute
           for (let i = 0; i < n; i++) {
-            posAttr.setXYZ(i, linePositions[i * 3]!, linePositions[i * 3 + 1]!, linePositions[i * 3 + 2]!)
+            posAttr.setXYZ(
+              i,
+              linePositions[i * 3]!,
+              linePositions[i * 3 + 1]!,
+              linePositions[i * 3 + 2]!,
+            )
             tAttr.setX(i, n > 1 ? i / (n - 1) : 1)
           }
           tAttr.needsUpdate = true
@@ -191,7 +192,12 @@ export class HeroScene {
           if (trailPoints?.geometry) {
             const pp = trailPoints.geometry.getAttribute('position') as THREE.BufferAttribute
             for (let i = 0; i < n; i++) {
-              pp.setXYZ(i, linePositions[i * 3]!, linePositions[i * 3 + 1]!, linePositions[i * 3 + 2]!)
+              pp.setXYZ(
+                i,
+                linePositions[i * 3]!,
+                linePositions[i * 3 + 1]!,
+                linePositions[i * 3 + 2]!,
+              )
               trailPointsT.setX(i, n > 1 ? i / (n - 1) : 1)
             }
             pp.needsUpdate = true
@@ -254,7 +260,9 @@ export class HeroScene {
               }
             }
             fillRibbon(ribbonPos, ribbonT, baseWidth)
-            const ribPosAttr = trailRibbon.geometry.getAttribute('position') as THREE.BufferAttribute
+            const ribPosAttr = trailRibbon.geometry.getAttribute(
+              'position',
+            ) as THREE.BufferAttribute
             const ribTAttr = trailRibbon.geometry.getAttribute('trailT') as THREE.BufferAttribute
             for (let i = 0; i < n * 2; i++) {
               ribPosAttr.setXYZ(i, ribbonPos[i * 3]!, ribbonPos[i * 3 + 1]!, ribbonPos[i * 3 + 2]!)
@@ -271,10 +279,19 @@ export class HeroScene {
             const ribbonGlowT = child.userData.ribbonGlowT as Float32Array | undefined
             if (trailGlowRibbon && glowWidth > 0 && ribbonGlowPos && ribbonGlowT) {
               fillRibbon(ribbonGlowPos, ribbonGlowT, glowWidth)
-              const glowPosAttr = trailGlowRibbon.geometry.getAttribute('position') as THREE.BufferAttribute
-              const glowTAttr = trailGlowRibbon.geometry.getAttribute('trailT') as THREE.BufferAttribute
+              const glowPosAttr = trailGlowRibbon.geometry.getAttribute(
+                'position',
+              ) as THREE.BufferAttribute
+              const glowTAttr = trailGlowRibbon.geometry.getAttribute(
+                'trailT',
+              ) as THREE.BufferAttribute
               for (let i = 0; i < n * 2; i++) {
-                glowPosAttr.setXYZ(i, ribbonGlowPos[i * 3]!, ribbonGlowPos[i * 3 + 1]!, ribbonGlowPos[i * 3 + 2]!)
+                glowPosAttr.setXYZ(
+                  i,
+                  ribbonGlowPos[i * 3]!,
+                  ribbonGlowPos[i * 3 + 1]!,
+                  ribbonGlowPos[i * 3 + 2]!,
+                )
                 glowTAttr.setX(i, ribbonGlowT[i]!)
               }
               glowPosAttr.needsUpdate = true
@@ -300,10 +317,16 @@ export class HeroScene {
     cancelAnimationFrame(this.animationId)
     this.resizeObserver.disconnect()
     this._cleanupMouse?.()
+    this.timer.dispose()
     this.composer.dispose()
     this.renderer.dispose()
     this.scene.traverse((obj) => {
-      if (obj instanceof THREE.Mesh || obj instanceof THREE.LineSegments || obj instanceof THREE.Line || obj instanceof THREE.Points) {
+      if (
+        obj instanceof THREE.Mesh ||
+        obj instanceof THREE.LineSegments ||
+        obj instanceof THREE.Line ||
+        obj instanceof THREE.Points
+      ) {
         obj.geometry.dispose()
         const mat = obj.material
         if (Array.isArray(mat)) mat.forEach((m) => m.dispose())

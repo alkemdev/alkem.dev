@@ -15,7 +15,7 @@ export default defineConfig({
     rehypePlugins: [rehypeKatex],
   },
   vite: {
-    plugins: [tailwindcss() as any],
+    plugins: [tailwindcss()],
     assetsInclude: ['**/*.glsl'],
   },
 })
