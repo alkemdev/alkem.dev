@@ -7,8 +7,9 @@
   },
   "scripts": {
     "sync:brand": "node scripts/sync-brand-css.mjs",
+    "og:generate": "node scripts/generate-og.mjs",
     "predev": "npm run sync:brand",
-    "prebuild": "npm run sync:brand",
+    "prebuild": "npm run sync:brand && npm run og:generate",
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
@@ -32,6 +33,8 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
     "@types/three": "^0.184.0",
     "prettier": "^3.8.3",
