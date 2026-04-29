@@ -92,12 +92,12 @@ resource "cloudflare_pages_project" "this" {
       production_deployments_enabled = true
       preview_deployment_setting     = "all"
       pr_comments_enabled            = true
-      # Match Cloudflare's defaults explicitly so plans stay deterministic
-      # rather than showing "known after apply" drift on every refresh.
+      # Pin includes to "*" so we don't drift to "known after apply".
+      # Cannot pin `*_excludes = []`: the API returns null for unset
+      # excludes and the provider then rejects the [] -> null transition
+      # as an inconsistent post-apply state.
       path_includes           = ["*"]
-      path_excludes           = []
       preview_branch_includes = ["*"]
-      preview_branch_excludes = []
     }
   }
 
