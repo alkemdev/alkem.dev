@@ -92,6 +92,12 @@ resource "cloudflare_pages_project" "this" {
       production_deployments_enabled = true
       preview_deployment_setting     = "all"
       pr_comments_enabled            = true
+      # Match Cloudflare's defaults explicitly so plans stay deterministic
+      # rather than showing "known after apply" drift on every refresh.
+      path_includes           = ["*"]
+      path_excludes           = []
+      preview_branch_includes = ["*"]
+      preview_branch_excludes = []
     }
   }
 
