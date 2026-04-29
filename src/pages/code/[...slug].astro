@@ -13,11 +13,27 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props
 const { Content } = await render(project)
+
+const statusColor: Record<string, string> = {
+  active: 'text-green',
+  completed: 'text-text-dim',
+  planned: 'text-purple',
+}
 ---
 
 <Page title={project.data.title} description={project.data.blurb}>
   <article class="mx-auto max-w-3xl">
     <header class="mb-10">
+      <div class="mb-3 flex items-center gap-3">
+        <span
+          class:list={[
+            'rounded-full border border-border/60 bg-bg-raised px-2.5 py-0.5 font-mono text-xs tracking-wide capitalize',
+            statusColor[project.data.status] ?? 'text-text-dim',
+          ]}
+        >
+          {project.data.status}
+        </span>
+      </div>
       <h1 class="text-4xl font-bold">{project.data.title}</h1>
       <p class="mt-4 text-lg text-text-dim">{project.data.blurb}</p>
       <div class="mt-4 flex items-center gap-4">
