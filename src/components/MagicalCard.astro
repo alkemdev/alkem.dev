@@ -2,7 +2,11 @@
 /**
  * Card shell with a rotating conic-gradient halo on hover.
  * Pass `href` to render as `<a>`; omit for a non-linking `<div>`.
- * `glow` controls the gradient direction (green-first vs purple-first).
+ * `glow` picks the gradient direction (green-first vs purple-first).
+ *
+ * Brand colors flow through CSS vars: the component sets
+ * `--magical-from` / `--magical-to` to two of the @theme tokens, and
+ * the conic-gradient + hover shadow are defined in global.css.
  */
 interface Props {
   href?: string | undefined
@@ -13,22 +17,22 @@ interface Props {
 const { href, glow = 'purple', class: className } = Astro.props
 const Tag = href ? 'a' : 'div'
 
-const gradient =
+const glowVars =
   glow === 'green'
-    ? 'conic-gradient(transparent,transparent,transparent,rgb(96 168 121 / 0.6),rgb(153 85 187 / 0.6),transparent)'
-    : 'conic-gradient(transparent,transparent,transparent,rgb(153 85 187 / 0.6),rgb(96 168 121 / 0.6),transparent)'
+    ? '--magical-from: var(--color-green); --magical-to: var(--color-purple);'
+    : '--magical-from: var(--color-purple); --magical-to: var(--color-green);'
 ---
 
 <Tag
   href={href}
+  style={glowVars}
   class:list={[
-    'magical-card group relative block h-full overflow-hidden rounded-xl bg-bg-raised p-[1px] shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-all duration-200 ease-out hover:shadow-[0_10px_30px_rgba(96,168,121,0.08),0_10px_30px_rgba(153,85,187,0.08)]',
+    'magical-card group relative block h-full overflow-hidden rounded-xl bg-bg-raised p-[1px] transition-all duration-200 ease-out',
     className,
   ]}
 >
   <div
     class="magical-glow pointer-events-none absolute top-[-50%] left-[-50%] h-[200%] w-[200%] opacity-0 transition-opacity duration-500"
-    style={`background: ${gradient}`}
     aria-hidden="true"
   >
   </div>

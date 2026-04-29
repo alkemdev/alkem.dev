@@ -95,6 +95,7 @@ For infrastructure changes (DNS, custom domain), see
 ## Project conventions
 
 - **No unnecessary comments** — code should be self-documenting
-- **Brand colors** are defined in `src/styles/global.css` and `src/site.ts`
+- **Brand colors** are defined in `src/brand/tokens.json`. CSS consumers go through the generated `src/styles/brand-theme.css` (Tailwind `@theme`); JS/Three.js consumers import from `src/brand/colors.ts`. `npm run sync:brand` regenerates the CSS from the tokens.
+- **Site copy** (name, tagline, page titles) lives in `src/site.ts`
 - **Fonts** are self-hosted in `public/fonts/` (Ubuntu family)
-- **Images** go in `public/images/`
+- **Images** go in `public/images/`. Generated images (`og.png`, `apple-touch-icon.png`) come from scripts in `scripts/` and refresh on `prebuild`.

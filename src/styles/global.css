@@ -123,14 +123,33 @@
 
 /* `<MagicalCard>` shell: rotating conic-gradient halo on hover.
    Animation is paused by default so offscreen cards don't drive layout
-   thrash during scroll. Reduced-motion users see a static card. */
+   thrash during scroll. Reduced-motion users see a static card.
+   Glow colors come from `--magical-from` / `--magical-to` set on the
+   card root, which point at @theme tokens — palette stays the single
+   source of truth. */
 @layer components {
   @keyframes magical-rotate {
     100% {
       transform: rotate(360deg);
     }
   }
+  .magical-card {
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.3);
+  }
+  .magical-card:hover {
+    box-shadow:
+      0 10px 30px color-mix(in srgb, var(--color-green) 8%, transparent),
+      0 10px 30px color-mix(in srgb, var(--color-purple) 8%, transparent);
+  }
   .magical-card .magical-glow {
+    background: conic-gradient(
+      transparent,
+      transparent,
+      transparent,
+      color-mix(in srgb, var(--magical-from, var(--color-purple)) 60%, transparent),
+      color-mix(in srgb, var(--magical-to, var(--color-green)) 60%, transparent),
+      transparent
+    );
     animation: magical-rotate 6s linear infinite;
     animation-play-state: paused;
   }
