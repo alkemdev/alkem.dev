@@ -11,7 +11,16 @@
 
 const base = (process.argv[2] ?? 'http://localhost:4321').replace(/\/$/, '')
 
-const SEED = ['/', '/blog', '/code', '/info', '/rss.xml', '/sitemap-index.xml', '/robots.txt']
+const SEED = [
+  '/',
+  '/blog',
+  '/code',
+  '/info',
+  '/404',
+  '/rss.xml',
+  '/sitemap-index.xml',
+  '/robots.txt',
+]
 
 /** @type {Map<string, {status: number, contentType: string, body: string, problems: string[]}>} */
 const visited = new Map()
@@ -54,6 +63,17 @@ function validateHtml(path, html) {
   if (!/<title>[^<]+<\/title>/i.test(html)) problems.push('no <title>')
   if (!/<meta\s+name="description"/i.test(html)) problems.push('no meta description')
   if (!/<link\s+rel="canonical"/i.test(html)) problems.push('no canonical link')
+  if (!/<meta\s+name="theme-color"/i.test(html)) problems.push('no theme-color meta')
+  if (!/<link\s+rel="apple-touch-icon"/i.test(html)) problems.push('no apple-touch-icon')
+  if (!/<link\s+rel="preload"[^>]+ubuntu-regular\.woff2/i.test(html))
+    problems.push('no Ubuntu regular font preload')
+  if (!/<script[^>]+application\/ld\+json[^>]*>/i.test(html))
+    problems.push('no JSON-LD structured data')
+
+  // External CDN dependencies should be self-hosted — KaTeX moved off
+  // jsdelivr in commit 21db7b2; flag any regression.
+  if (/cdn\.jsdelivr\.net|unpkg\.com|cdnjs\.cloudflare\.com/i.test(html))
+    problems.push('uses external CDN (should be self-hosted)')
 
   // Homepage has hero canvas / fallback
   if (path === '/') {
