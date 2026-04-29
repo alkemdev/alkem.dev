@@ -79,15 +79,19 @@ Key design choices:
 
 ## Infrastructure
 
-The Cloudflare Pages project is created via the dashboard (required for
-GitHub integration / auto-deploy). Terraform manages only:
+End-to-end IaC with [OpenTofu](https://opentofu.org) and the Cloudflare
+provider v5. The Pages project, custom domain binding, and DNS record
+are all defined in [`infra/cloudflare/`](infra/cloudflare/) — no GitHub
+Actions, no dashboard clicks (after the one-time GitHub-App OAuth).
 
-- DNS CNAME record (`alkem.dev` → `alkem-dev.pages.dev`)
-- Custom domain binding on the Pages project
+`NODE_VERSION=22` is set as a Pages env var via Terraform; the build
+runs `npm run build` and ships `dist/`. Cloudflare's built-in runner
+deploys on push to `main` via the GitHub webhook configured by the
+`cloudflare_pages_project.this` resource.
 
-See [`infra/cloudflare/README.md`](infra/cloudflare/README.md) for setup.
-
-**Node version:** Astro 6 requires Node **22.12+**. On Cloudflare Pages, set the environment variable `NODE_VERSION` to `22` (or match `.nvmrc`) so builds use a compatible runtime.
+See [`infra/cloudflare/README.md`](infra/cloudflare/README.md) for the
+full IaC layout, prerequisites, and the `tofu import` flow for adopting
+an existing project.
 
 ## Branding
 

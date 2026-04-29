@@ -1,3 +1,9 @@
-account_id         = "your-cloudflare-account-id"
-zone_name          = "alkem.dev"
-pages_project_name = "alkem-dev"
+account_id = "your-cloudflare-account-id"
+
+# All other variables have sensible defaults for alkem.dev — uncomment to override:
+# zone_name          = "alkem.dev"
+# pages_project_name = "alkem-dev"
+# github_owner       = "alkemdev"
+# github_repo        = "alkem.dev"
+# production_branch  = "main"
+# node_version       = "22"
