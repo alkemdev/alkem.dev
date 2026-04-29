@@ -65,6 +65,15 @@ function validateHtml(path, html) {
   if (!/<link\s+rel="canonical"/i.test(html)) problems.push('no canonical link')
   if (!/<meta\s+name="theme-color"/i.test(html)) problems.push('no theme-color meta')
   if (!/<link\s+rel="apple-touch-icon"/i.test(html)) problems.push('no apple-touch-icon')
+
+  // Canonical and og:url must be the clean public URL (no `.html`).
+  // With `build.format: 'file'`, `Astro.url.pathname` includes the .html
+  // suffix during build — anything that uses it raw will leak into
+  // the canonical. The `canonicalPath()` helper in src/site.ts strips it.
+  const canonical = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i)?.[1]
+  if (canonical?.endsWith('.html')) problems.push(`canonical leaks .html: ${canonical}`)
+  const ogUrl = html.match(/<meta\s+property="og:url"\s+content="([^"]+)"/i)?.[1]
+  if (ogUrl?.endsWith('.html')) problems.push(`og:url leaks .html: ${ogUrl}`)
   if (!/<link\s+rel="preload"[^>]+ubuntu-regular\.woff2/i.test(html))
     problems.push('no Ubuntu regular font preload')
   if (!/<script[^>]+application\/ld\+json[^>]*>/i.test(html))
