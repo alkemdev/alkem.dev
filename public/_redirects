@@ -1,0 +1,12 @@
+# Cloudflare Pages redirects.
+# https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Strip trailing slashes so they match Astro's `trailingSlash: 'never'`
+# canonicals. With `build.format: 'file'` (dist/blog.html, not
+# dist/blog/index.html), `/blog/` would 404 on its own — this rule
+# 301s it back to `/blog` so old inbound links keep resolving.
+/blog/ /blog 301
+/code/ /code 301
+/info/ /info 301
+/blog/*/ /blog/:splat 301
+/code/*/ /code/:splat 301

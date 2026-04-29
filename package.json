@@ -17,7 +17,8 @@
     "check": "astro check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "crawl": "node scripts/crawl.mjs"
+    "crawl": "node scripts/crawl.mjs",
+    "crawl:live": "node scripts/crawl.mjs https://alkem.dev"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",

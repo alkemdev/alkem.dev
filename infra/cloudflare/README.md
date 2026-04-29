@@ -9,12 +9,12 @@ No GitHub Actions, no dashboard clicks (after the one-time OAuth) — just
 
 ## What Terraform manages
 
-| Resource                          | Purpose                                                                                              |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `cloudflare_pages_project.this`   | The Pages project itself: GitHub source binding, build command, output dir, NODE_VERSION env var |
-| `cloudflare_pages_domain.apex`    | Binds `alkem.dev` to the Pages project                                                              |
-| `cloudflare_dns_record.apex`      | CNAME `alkem.dev` → `<project>.pages.dev` (proxied)                                                  |
-| `data.cloudflare_zones.main`      | Looks up the zone ID by name                                                                         |
+| Resource                        | Purpose                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `cloudflare_pages_project.this` | The Pages project itself: GitHub source binding, build command, output dir, NODE_VERSION env var |
+| `cloudflare_pages_domain.apex`  | Binds `alkem.dev` to the Pages project                                                           |
+| `cloudflare_dns_record.apex`    | CNAME `alkem.dev` → `<project>.pages.dev` (proxied)                                              |
+| `data.cloudflare_zones.main`    | Looks up the zone ID by name                                                                     |
 
 ## One-time prerequisite (not Terraform-able)
 
@@ -76,14 +76,14 @@ runner triggers off the GitHub webhook — it's not driven by `tofu apply`.
 
 ## Files
 
-| File                       | Tracked         | Purpose                                          |
-| -------------------------- | --------------- | ------------------------------------------------ |
-| `main.tf`                  | Yes             | Resource definitions                             |
-| `terraform.tfvars.example` | Yes             | Template for variables                           |
+| File                       | Tracked         | Purpose                                                |
+| -------------------------- | --------------- | ------------------------------------------------------ |
+| `main.tf`                  | Yes             | Resource definitions                                   |
+| `terraform.tfvars.example` | Yes             | Template for variables                                 |
 | `terraform.tfvars`         | No (gitignored) | Actual variable values (only `account_id` is required) |
-| `.terraform.lock.hcl`      | Yes             | Provider version lock                            |
-| `.terraform/`              | No (gitignored) | Provider binaries                                |
-| `*.tfstate`                | No (gitignored) | State files (consider remote state for team use) |
+| `.terraform.lock.hcl`      | Yes             | Provider version lock                                  |
+| `.terraform/`              | No (gitignored) | Provider binaries                                      |
+| `*.tfstate`                | No (gitignored) | State files (consider remote state for team use)       |
 
 ## Outputs
 
