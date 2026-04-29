@@ -3,6 +3,7 @@ import 'katex/dist/katex.min.css'
 import Root from './Root.astro'
 import Nav from '@components/Nav.astro'
 import Footer from '@components/Footer.astro'
+import { SITE } from '@/site'
 
 interface Props {
   title: string
@@ -13,6 +14,27 @@ interface Props {
 }
 
 const { title, blurb, dated, image, tags = [] } = Astro.props
+
+const canonicalUrl = new URL(Astro.url.pathname, SITE.url).toString()
+const ogImage = new URL(image ?? '/og.png', SITE.url).toString()
+
+const blogPostingLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: blurb,
+  datePublished: dated.toISOString(),
+  url: canonicalUrl,
+  mainEntityOfPage: canonicalUrl,
+  image: ogImage,
+  keywords: tags,
+  author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    logo: { '@type': 'ImageObject', url: new URL('/og.png', SITE.url).toString() },
+  },
+}
 ---
 
 <Root title={title} description={blurb} image={image}>
@@ -61,4 +83,5 @@ const { title, blurb, dated, image, tags = [] } = Astro.props
     </article>
   </main>
   <Footer />
+  <script type="application/ld+json" set:html={JSON.stringify(blogPostingLd)} is:inline />
 </Root>
