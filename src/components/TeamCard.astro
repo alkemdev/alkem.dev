@@ -1,4 +1,6 @@
 ---
+import MagicalCard from './MagicalCard.astro'
+
 interface Props {
   name: string
   role: string
@@ -10,63 +12,32 @@ interface Props {
 const { name, role, blurb, image, socials = {} } = Astro.props
 ---
 
-<div
-  class="magical-card relative bg-bg-raised rounded-xl p-[1px] overflow-hidden h-full transition-all duration-200 ease-out shadow-[0_2px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_10px_30px_rgba(96,168,121,0.08),0_10px_30px_rgba(153,85,187,0.08)]"
->
-  <!-- Glowing Border Element -->
-  <div
-    class="magical-glow absolute top-[-50%] left-[-50%] w-[200%] h-[200%] opacity-0 transition-opacity duration-500 pointer-events-none bg-[conic-gradient(transparent,transparent,transparent,rgba(153,85,187,0.6),rgba(96,168,121,0.6),transparent)]"
-    style="animation: rotate 6s linear infinite;"
-  >
-  </div>
-
-  <!-- Card Content -->
-  <div
-    class="magical-card-inner relative z-10 bg-bg-raised rounded-[11px] h-full p-6 flex flex-col"
-  >
-    <div class="flex items-start gap-4 transition-transform duration-200 ease-out">
-      {
-        image ? (
-          <img src={image} alt={name} class="h-16 w-16 rounded-full object-cover" />
-        ) : (
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple/20 text-2xl font-bold text-purple">
-            {name[0]}
-          </div>
-        )
-      }
-      <div>
-        <h3 class="text-lg font-bold">{name}</h3>
-        <p class="text-sm text-green">{role}</p>
-      </div>
-    </div>
-    <p class="mt-4 text-sm text-text-dim flex-grow transition-transform duration-200 ease-out">
-      {blurb}
-    </p>
+<MagicalCard glow="purple">
+  <div class="flex items-start gap-4">
     {
-      Object.keys(socials).length > 0 && (
-        <div class="mt-4 flex gap-4 transition-transform duration-200 ease-out relative z-20">
-          {Object.entries(socials).map(([platform, url]) => (
-            <a href={url} class="text-xs text-text-dim hover:text-text capitalize">
-              {platform}
-            </a>
-          ))}
+      image ? (
+        <img src={image} alt={name} class="h-16 w-16 rounded-full object-cover" />
+      ) : (
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple/20 text-2xl font-bold text-purple">
+          {name[0]}
         </div>
       )
     }
+    <div>
+      <h3 class="text-lg font-bold">{name}</h3>
+      <p class="text-sm text-green">{role}</p>
+    </div>
   </div>
-</div>
-
-<style>
-  @keyframes rotate {
-    100% {
-      transform: rotate(360deg);
-    }
+  <p class="mt-4 flex-grow text-sm text-text-dim">{blurb}</p>
+  {
+    Object.keys(socials).length > 0 && (
+      <div class="relative z-20 mt-4 flex gap-4">
+        {Object.entries(socials).map(([platform, url]) => (
+          <a href={url} class="text-xs text-text-dim capitalize hover:text-text">
+            {platform}
+          </a>
+        ))}
+      </div>
+    )
   }
-  .magical-card .magical-glow {
-    animation-play-state: paused;
-  }
-  .magical-card:hover .magical-glow {
-    opacity: 1;
-    animation-play-state: running;
-  }
-</style>
+</MagicalCard>

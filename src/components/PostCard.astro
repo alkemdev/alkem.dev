@@ -1,4 +1,6 @@
 ---
+import MagicalCard from './MagicalCard.astro'
+
 interface Props {
   title: string
   blurb: string
@@ -10,51 +12,21 @@ interface Props {
 const { title, blurb, slug, dated, tags = [] } = Astro.props
 ---
 
-<a
-  href={`/blog/${slug}`}
-  class="magical-card group relative block h-full overflow-hidden rounded-xl bg-bg-raised p-[1px] shadow-[0_2px_10px_rgba(0,0,0,0.3)] transition-all duration-200 ease-out hover:shadow-[0_10px_30px_rgba(96,168,121,0.08),0_10px_30px_rgba(153,85,187,0.08)]"
->
-  <div
-    class="magical-glow pointer-events-none absolute top-[-50%] left-[-50%] h-[200%] w-[200%] opacity-0 transition-opacity duration-500 bg-[conic-gradient(transparent,transparent,transparent,rgba(96,168,121,0.6),rgba(153,85,187,0.6),transparent)]"
-    style="animation: rotate 6s linear infinite;"
-  >
-  </div>
-
-  <div
-    class="magical-card-inner relative z-10 flex h-full flex-col rounded-[11px] bg-bg-raised p-6"
-  >
-    <time datetime={dated.toISOString()} class="text-xs text-text-dim">
-      {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-    </time>
-    <h3 class="mt-2 text-xl font-bold text-text transition-colors group-hover:text-green">
-      {title}
-    </h3>
-    <p class="mt-2 flex-grow text-sm text-text-dim">{blurb}</p>
-    {
-      tags.length > 0 && (
-        <div class="mt-3 flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
-          ))}
-        </div>
-      )
-    }
-  </div>
-</a>
-
-<style>
-  @keyframes rotate {
-    100% {
-      transform: rotate(360deg);
-    }
+<MagicalCard href={`/blog/${slug}`} glow="green">
+  <time datetime={dated.toISOString()} class="text-xs text-text-dim">
+    {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+  </time>
+  <h3 class="mt-2 text-xl font-bold text-text transition-colors group-hover:text-green">
+    {title}
+  </h3>
+  <p class="mt-2 flex-grow text-sm text-text-dim">{blurb}</p>
+  {
+    tags.length > 0 && (
+      <div class="mt-3 flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
+        ))}
+      </div>
+    )
   }
-  /* Only animate the rotating gradient when hovered — offscreen cards
-     stay idle so scroll stays smooth. */
-  .magical-card .magical-glow {
-    animation-play-state: paused;
-  }
-  .magical-card:hover .magical-glow {
-    opacity: 1;
-    animation-play-state: running;
-  }
-</style>
+</MagicalCard>

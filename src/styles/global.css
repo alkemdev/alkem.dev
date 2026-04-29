@@ -120,3 +120,28 @@
     outline-offset: 3px;
   }
 }
+
+/* `<MagicalCard>` shell: rotating conic-gradient halo on hover.
+   Animation is paused by default so offscreen cards don't drive layout
+   thrash during scroll. Reduced-motion users see a static card. */
+@layer components {
+  @keyframes magical-rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .magical-card .magical-glow {
+    animation: magical-rotate 6s linear infinite;
+    animation-play-state: paused;
+  }
+  .magical-card:hover .magical-glow {
+    opacity: 1;
+    animation-play-state: running;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .magical-card .magical-glow {
+      animation: none;
+      opacity: 0;
+    }
+  }
+}
