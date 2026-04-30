@@ -20,7 +20,7 @@ const { Content } = await render(post)
   title={post.data.title}
   blurb={post.data.blurb}
   dated={post.data.dated}
-  image={post.data.image}
+  image={post.data.image ?? `/og/${post.id}.png`}
   tags={post.data.tags}
 >
   <Content />

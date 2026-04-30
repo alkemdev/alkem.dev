@@ -8,9 +8,10 @@
   "scripts": {
     "sync:brand": "node scripts/sync-brand-css.mjs",
     "og:generate": "node scripts/generate-og.mjs",
+    "og:posts": "node scripts/generate-post-og.mjs",
     "icons:generate": "node scripts/generate-apple-icon.mjs",
     "predev": "npm run sync:brand",
-    "prebuild": "npm run sync:brand && npm run og:generate && npm run icons:generate",
+    "prebuild": "npm run sync:brand && npm run og:generate && npm run og:posts && npm run icons:generate",
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
