@@ -7,21 +7,41 @@ interface Props {
   slug: string
   dated: Date
   tags?: string[]
+  /** Reading time in minutes — when present, rendered as `· N min`. */
+  minutes?: number | undefined
   /** Render a larger, magazine-cover treatment for a featured post. */
   featured?: boolean
   class?: string | undefined
 }
 
-const { title, blurb, slug, dated, tags = [], featured = false, class: className } = Astro.props
+const {
+  title,
+  blurb,
+  slug,
+  dated,
+  tags = [],
+  minutes,
+  featured = false,
+  class: className,
+} = Astro.props
 ---
 
 <MagicalCard href={`/blog/${slug}`} glow="green" class={className}>
-  <time
-    datetime={dated.toISOString()}
-    class:list={[featured ? 'text-sm text-text-dim' : 'text-xs text-text-dim']}
-  >
-    {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-  </time>
+  <p class:list={['flex items-center gap-2', featured ? 'text-sm' : 'text-xs', 'text-text-dim']}>
+    <time datetime={dated.toISOString()}>
+      {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </time>
+    {
+      minutes && (
+        <>
+          <span aria-hidden="true" class="text-text-dim/50">
+            ·
+          </span>
+          <span>{minutes} min read</span>
+        </>
+      )
+    }
+  </p>
   <h3
     class:list={[
       'font-bold text-text transition-colors group-hover:text-green',

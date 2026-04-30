@@ -11,9 +11,10 @@ interface Props {
   dated: Date
   image?: string | undefined
   tags?: string[] | undefined
+  minutes?: number | undefined
 }
 
-const { title, blurb, dated, image, tags = [] } = Astro.props
+const { title, blurb, dated, image, tags = [], minutes } = Astro.props
 
 const canonicalUrl = new URL(canonicalPath(Astro.url.pathname), SITE.url).toString()
 const ogImage = new URL(image ?? '/og.png', SITE.url).toString()
@@ -60,9 +61,21 @@ const blogPostingLd = {
         </a>
       </nav>
       <header class="mb-12">
-        <time datetime={dated.toISOString()} class="text-sm text-text-dim">
-          {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-        </time>
+        <p class="flex items-center gap-2 text-sm text-text-dim">
+          <time datetime={dated.toISOString()}>
+            {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </time>
+          {
+            minutes && (
+              <>
+                <span aria-hidden="true" class="text-text-dim/50">
+                  ·
+                </span>
+                <span>{minutes} min read</span>
+              </>
+            )
+          }
+        </p>
         <h1 class="mt-2 text-4xl font-bold leading-[1.1] md:text-5xl">{title}</h1>
         <div
           class="mt-4 h-[3px] w-16 rounded-full bg-gradient-to-r from-green via-green/70 to-purple md:w-24"

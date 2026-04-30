@@ -5,6 +5,8 @@ import sitemap from '@astrojs/sitemap'
 import expressiveCode from 'astro-expressive-code'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import { SITE } from './src/site'
 
 export default defineConfig({
@@ -20,7 +22,18 @@ export default defineConfig({
   integrations: [expressiveCode({ themes: ['github-dark'] }), mdx(), sitemap()],
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [
+      rehypeKatex,
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'append',
+          properties: { className: ['heading-anchor'], 'aria-label': 'Link to this section' },
+          content: { type: 'text', value: '#' },
+        },
+      ],
+    ],
   },
   vite: {
     plugins: [tailwindcss()],

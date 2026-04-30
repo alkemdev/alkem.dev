@@ -7,6 +7,7 @@ import Section from '@components/Section.astro'
 import PostCard from '@components/PostCard.astro'
 import ProjectCard from '@components/ProjectCard.astro'
 import { getCollection } from 'astro:content'
+import { readingMinutes } from '@/lib/posts'
 
 const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order)
@@ -39,6 +40,7 @@ const more = posts.slice(1)
                   slug={featured.id}
                   dated={featured.data.dated}
                   tags={featured.data.tags}
+                  minutes={readingMinutes(featured.body ?? '')}
                   featured
                 />
                 {more.length > 0 && (
@@ -50,6 +52,7 @@ const more = posts.slice(1)
                         slug={post.id}
                         dated={post.data.dated}
                         tags={post.data.tags}
+                        minutes={readingMinutes(post.body ?? '')}
                       />
                     ))}
                   </div>

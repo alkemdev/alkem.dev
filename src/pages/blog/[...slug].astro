@@ -1,6 +1,7 @@
 ---
 import Post from '@layouts/Post.astro'
 import { getCollection, render } from 'astro:content'
+import { readingMinutes } from '@/lib/posts'
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts')
@@ -14,6 +15,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props
 const { Content } = await render(post)
+const minutes = readingMinutes(post.body ?? '')
 ---
 
 <Post
@@ -22,6 +24,7 @@ const { Content } = await render(post)
   dated={post.data.dated}
   image={post.data.image ?? `/og/${post.id}.png`}
   tags={post.data.tags}
+  minutes={minutes}
 >
   <Content />
 </Post>
