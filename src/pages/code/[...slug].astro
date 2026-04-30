@@ -14,40 +14,55 @@ export async function getStaticPaths() {
 const { project } = Astro.props
 const { Content } = await render(project)
 
-const statusColor: Record<string, string> = {
-  active: 'text-green',
-  completed: 'text-text-dim',
-  planned: 'text-purple',
+const statusStyle: Record<string, string> = {
+  active: 'border-green/30 bg-green/10 text-green',
+  completed: 'border-border bg-bg-raised text-text-dim',
+  planned: 'border-purple/30 bg-purple/10 text-purple',
 }
 ---
 
 <Page title={project.data.title} description={project.data.blurb}>
   <article class="mx-auto max-w-3xl">
     <header class="mb-10">
-      <div class="mb-3 flex items-center gap-3">
-        <span
-          class:list={[
-            'rounded-full border border-border/60 bg-bg-raised px-2.5 py-0.5 font-mono text-xs tracking-wide capitalize',
-            statusColor[project.data.status] ?? 'text-text-dim',
-          ]}
-        >
-          {project.data.status}
-        </span>
+      <span
+        class:list={[
+          'mb-4 inline-flex rounded-full border px-2.5 py-0.5 font-mono text-[11px] tracking-wider uppercase',
+          statusStyle[project.data.status] ?? statusStyle.completed,
+        ]}
+      >
+        {project.data.status}
+      </span>
+      <h1 class="text-4xl font-bold leading-[1.1] md:text-5xl">{project.data.title}</h1>
+      <div
+        class="mt-4 h-[3px] w-16 rounded-full bg-gradient-to-r from-green via-green/70 to-purple md:w-24"
+        aria-hidden="true"
+      >
       </div>
-      <h1 class="text-4xl font-bold">{project.data.title}</h1>
-      <p class="mt-4 text-lg text-text-dim">{project.data.blurb}</p>
-      <div class="mt-4 flex items-center gap-4">
+      <p class="mt-5 text-lg text-text-dim">{project.data.blurb}</p>
+      <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         {
           project.data.repo && (
-            <a href={project.data.repo} class="text-sm text-green hover:text-purple">
-              Repository &#8594;
+            <a
+              href={project.data.repo}
+              class="group inline-flex items-center gap-1 font-medium text-green transition-colors hover:text-purple"
+            >
+              Repository
+              <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
             </a>
           )
         }
         {
           project.data.url && (
-            <a href={project.data.url} class="text-sm text-green hover:text-purple">
-              Website &#8594;
+            <a
+              href={project.data.url}
+              class="group inline-flex items-center gap-1 font-medium text-green transition-colors hover:text-purple"
+            >
+              Website
+              <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
             </a>
           )
         }

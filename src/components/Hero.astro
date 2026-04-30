@@ -32,6 +32,50 @@ const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
   .hero-cta-secondary:hover {
     box-shadow: 0 0 20px rgb(var(--greenRgb) / 0.12);
   }
+
+  /* Staggered entrance — wordmark first, tagline + CTAs follow.
+     `backwards` fill keeps the element invisible before its delay fires
+     (no flash of unstaged content). */
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .hero-rise {
+    animation: hero-rise 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  .hero-rise-1 {
+    animation-delay: 0.05s;
+  }
+  .hero-rise-2 {
+    animation-delay: 0.2s;
+  }
+  .hero-rise-3 {
+    animation-delay: 0.4s;
+  }
+
+  .hero-arrow {
+    display: inline-block;
+    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .hero-cta-primary:hover .hero-arrow,
+  .hero-cta-secondary:hover .hero-arrow {
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-rise {
+      animation: none;
+    }
+    .hero-arrow {
+      transition: none;
+    }
+  }
 </style>
 
 <section
@@ -59,33 +103,37 @@ const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
   >
     <h1
       id="hero-title"
-      class="text-4xl font-bold leading-[1.1] sm:text-5xl md:text-7xl"
+      class="text-4xl font-bold leading-[1.05] sm:text-5xl md:text-7xl"
       style="text-shadow: 0 2px 30px rgba(10,10,15,0.95), 0 0 60px rgba(10,10,15,0.8);"
     >
       {
         SITE.wordmark.map((line, i) => (
-          <span class:list={[line.accent === 'green' ? 'text-green' : 'text-purple']}>
+          <span
+            class:list={[
+              'hero-rise',
+              i === 0 ? 'hero-rise-1' : 'hero-rise-2',
+              line.accent === 'green' ? 'text-green' : 'text-purple',
+            ]}
+            style="display: inline-block;"
+          >
             {line.text}
             {i === 0 ? ' ' : ''}
           </span>
         ))
       }
     </h1>
-    <p class="mt-5 text-base font-medium tracking-wide text-green/90 md:mt-6 md:text-lg">
-      {SITE.tagline}
-    </p>
-    <div class="mt-10 flex flex-wrap justify-center gap-4">
-      <a
-        href="/code"
-        class="hero-cta-primary rounded-lg bg-purple px-6 py-3 text-sm font-bold text-white transition-[opacity,box-shadow,transform] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green active:scale-[0.98]"
-      >
-        Explore Code
-      </a>
+    <div class="hero-rise hero-rise-3 mt-12 flex flex-wrap justify-center gap-4">
       <a
         href="/blog"
-        class="hero-cta-secondary rounded-lg border border-border bg-bg/40 px-6 py-3 text-sm font-bold text-text backdrop-blur-sm transition-[border-color,color,box-shadow,transform] hover:border-green hover:text-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple active:scale-[0.98]"
+        class="hero-cta-primary group rounded-lg bg-purple px-6 py-3 text-sm font-bold text-white transition-[opacity,box-shadow,transform] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green active:scale-[0.98]"
       >
-        Read the Blog
+        Read Blog <span class="hero-arrow" aria-hidden="true">→</span>
+      </a>
+      <a
+        href="/info"
+        class="hero-cta-secondary group rounded-lg border border-border bg-bg/40 px-6 py-3 text-sm font-bold text-text backdrop-blur-sm transition-[border-color,color,box-shadow,transform] hover:border-green hover:text-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple active:scale-[0.98]"
+      >
+        About Us <span class="hero-arrow" aria-hidden="true">→</span>
       </a>
     </div>
   </div>

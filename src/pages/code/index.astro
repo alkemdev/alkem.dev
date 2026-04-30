@@ -1,5 +1,6 @@
 ---
 import Page from '@layouts/Page.astro'
+import PageHeader from '@components/PageHeader.astro'
 import ProjectCard from '@components/ProjectCard.astro'
 import { SITE } from '@/site'
 import { getCollection } from 'astro:content'
@@ -8,7 +9,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 ---
 
 <Page title={SITE.pages.code.title} description={SITE.pages.code.description}>
-  <h1 class="mb-10 text-4xl font-bold">Code</h1>
+  <PageHeader title="Code" lede={SITE.pages.code.description} />
   <div class="grid gap-6 md:grid-cols-2">
     {
       projects.map((project) => (

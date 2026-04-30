@@ -16,16 +16,20 @@ const { name, role, blurb, image, socials = {} } = Astro.props
   <div class="flex items-start gap-4">
     {
       image ? (
-        <img src={image} alt={name} class="h-16 w-16 rounded-full object-cover" />
+        <img
+          src={image}
+          alt={name}
+          class="h-16 w-16 rounded-full object-cover ring-1 ring-border/60"
+        />
       ) : (
-        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple/20 text-2xl font-bold text-purple">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple/35 via-purple/15 to-green/15 text-2xl font-bold text-purple shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] ring-1 ring-purple/40">
           {name[0]}
         </div>
       )
     }
     <div>
-      <h3 class="text-lg font-bold">{name}</h3>
-      <p class="text-sm text-green">{role}</p>
+      <h3 class="text-lg font-bold transition-colors group-hover:text-green">{name}</h3>
+      <p class="font-mono text-[11px] tracking-wider text-green uppercase">{role}</p>
     </div>
   </div>
   <p class="mt-4 flex-grow text-sm text-text-dim">{blurb}</p>

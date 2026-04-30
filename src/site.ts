@@ -28,8 +28,8 @@ export const SITE = {
 } as const
 
 export const NAV_LINKS = [
-  { label: 'Code', href: '/code' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Code', href: '/code' },
   { label: 'Team', href: '/info' },
 ] as const
 

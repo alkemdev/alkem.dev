@@ -1,0 +1,23 @@
+---
+/**
+ * Index-page header. Title + a single gradient underline + optional lede.
+ * The underline is the only place a heading gets a brand-color accent —
+ * that restraint is what makes it read as an accent.
+ */
+interface Props {
+  title: string
+  lede?: string | undefined
+}
+
+const { title, lede } = Astro.props
+---
+
+<header class="mb-10 md:mb-14">
+  <h1 class="text-4xl font-bold leading-[1.1] md:text-5xl">{title}</h1>
+  <div
+    class="mt-4 h-[3px] w-16 rounded-full bg-gradient-to-r from-green via-green/70 to-purple md:w-24"
+    aria-hidden="true"
+  >
+  </div>
+  {lede && <p class="mt-5 max-w-2xl text-base text-text-dim md:text-lg">{lede}</p>}
+</header>

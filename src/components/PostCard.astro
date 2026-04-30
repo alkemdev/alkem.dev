@@ -7,26 +7,56 @@ interface Props {
   slug: string
   dated: Date
   tags?: string[]
+  /** Render a larger, magazine-cover treatment for a featured post. */
+  featured?: boolean
+  class?: string | undefined
 }
 
-const { title, blurb, slug, dated, tags = [] } = Astro.props
+const { title, blurb, slug, dated, tags = [], featured = false, class: className } = Astro.props
 ---
 
-<MagicalCard href={`/blog/${slug}`} glow="green">
-  <time datetime={dated.toISOString()} class="text-xs text-text-dim">
+<MagicalCard href={`/blog/${slug}`} glow="green" class={className}>
+  <time
+    datetime={dated.toISOString()}
+    class:list={[featured ? 'text-sm text-text-dim' : 'text-xs text-text-dim']}
+  >
     {dated.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
   </time>
-  <h3 class="mt-2 text-xl font-bold text-text transition-colors group-hover:text-green">
+  <h3
+    class:list={[
+      'font-bold text-text transition-colors group-hover:text-green',
+      featured ? 'mt-3 text-2xl leading-[1.15] md:text-3xl lg:text-4xl' : 'mt-2 text-xl',
+    ]}
+  >
     {title}
   </h3>
-  <p class="mt-2 flex-grow text-sm text-text-dim">{blurb}</p>
+  <p
+    class:list={[
+      'flex-grow text-text-dim',
+      featured ? 'mt-4 max-w-2xl text-base md:text-lg' : 'mt-2 text-sm',
+    ]}
+  >
+    {blurb}
+  </p>
   {
     tags.length > 0 && (
-      <div class="mt-3 flex flex-wrap gap-2">
+      <div class="mt-3 flex flex-wrap gap-1.5">
         {tags.map((tag) => (
-          <span class="rounded-full bg-bg px-2 py-0.5 text-xs text-text-dim">{tag}</span>
+          <span class="rounded-full border border-border/60 bg-bg-raised/60 px-2 py-0.5 font-mono text-[10px] tracking-wide text-text-dim">
+            {tag}
+          </span>
         ))}
       </div>
+    )
+  }
+  {
+    featured && (
+      <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-green transition-colors group-hover:text-purple">
+        Read
+        <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">
+          →
+        </span>
+      </span>
     )
   }
 </MagicalCard>

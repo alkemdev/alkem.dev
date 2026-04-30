@@ -7,9 +7,9 @@ const isActive = (href: string) => pathname === href || pathname.startsWith(`${h
 
 const linkClass = (href: string, size: 'sm' | 'md' = 'sm') =>
   [
-    'rounded-md transition-colors',
-    size === 'sm' ? 'px-2 py-1.5 text-sm' : 'px-3 py-3 text-base',
-    isActive(href) ? 'text-green' : 'text-text-dim hover:text-text',
+    'border-b-2 border-transparent transition-colors',
+    size === 'sm' ? 'px-1 py-1.5 text-sm' : 'px-1 py-3 text-base',
+    isActive(href) ? 'border-green text-text' : 'text-text-dim hover:text-text',
   ] as const
 ---
 
@@ -26,7 +26,7 @@ const linkClass = (href: string, size: 'sm' | 'md' = 'sm') =>
       <span class="truncate text-lg font-bold">{SITE.name}</span>
     </a>
 
-    <div class="hidden items-center gap-2 md:flex">
+    <div class="hidden items-center gap-5 md:flex">
       {
         NAV_LINKS.map((link) => (
           <a

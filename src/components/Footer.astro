@@ -2,30 +2,48 @@
 import { SITE, NAV_LINKS } from '@/site'
 ---
 
-<footer class="border-t border-border/50 py-14">
+<footer class="relative mt-20 border-t border-border/50 py-16 md:py-20">
+  <div
+    aria-hidden="true"
+    class="absolute -top-px left-1/2 h-px w-32 -translate-x-1/2 bg-gradient-to-r from-transparent via-purple/40 to-transparent"
+  >
+  </div>
   <div class="mx-auto max-w-6xl px-6">
-    <div class="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-      <div class="max-w-sm">
-        <p class="font-semibold text-text">{SITE.name}</p>
-        <p class="mt-2 text-sm leading-relaxed text-text-dim">{SITE.description}</p>
-      </div>
-      <nav class="flex flex-wrap gap-x-8 gap-y-3 text-sm" aria-label="Footer">
+    <div class="flex flex-col items-center gap-8 text-center">
+      <a
+        href="/"
+        class="group flex flex-col items-center gap-3 transition-colors hover:opacity-90"
+        aria-label="Home"
+      >
+        <img
+          src="/images/flask.svg"
+          alt=""
+          width="40"
+          height="40"
+          class="h-10 w-10"
+          aria-hidden="true"
+        />
+        <span class="text-xl font-bold tracking-tight">{SITE.name}</span>
+      </a>
+
+      <nav
+        aria-label="Footer"
+        class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-text-dim"
+      >
         {
           NAV_LINKS.map((link) => (
-            <a href={link.href} class="text-text-dim transition-colors hover:text-green">
+            <a href={link.href} class="transition-colors hover:text-green">
               {link.label}
             </a>
           ))
         }
-        <a href={SITE.socials.github} class="text-text-dim transition-colors hover:text-green">
-          GitHub
-        </a>
-        <a href="/rss.xml" class="text-text-dim transition-colors hover:text-green"> RSS </a>
+        <a href={SITE.socials.github} class="transition-colors hover:text-green">GitHub</a>
+        <a href="/rss.xml" class="transition-colors hover:text-green">RSS</a>
       </nav>
+
+      <p class="text-xs text-text-dim/70">
+        &copy; {new Date().getFullYear()} {SITE.name}
+      </p>
     </div>
-    <p class="mt-10 border-t border-border/40 pt-8 text-center text-sm text-text-dim md:text-left">
-      &copy; {new Date().getFullYear()}
-      {SITE.name}
-    </p>
   </div>
 </footer>

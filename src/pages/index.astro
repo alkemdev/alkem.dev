@@ -4,21 +4,21 @@ import Nav from '@components/Nav.astro'
 import Footer from '@components/Footer.astro'
 import Hero from '@components/Hero.astro'
 import Section from '@components/Section.astro'
-import ProjectCard from '@components/ProjectCard.astro'
-import TeamCard from '@components/TeamCard.astro'
 import PostCard from '@components/PostCard.astro'
+import ProjectCard from '@components/ProjectCard.astro'
 import { getCollection } from 'astro:content'
 
 const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 4)
 
-const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order)
-
 const posts = (await getCollection('posts'))
   .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.dated.getTime() - a.data.dated.getTime())
-  .slice(0, 3)
+  .slice(0, 7)
+
+const featured = posts[0]
+const more = posts.slice(1)
 ---
 
 <Root>
@@ -29,48 +29,31 @@ const posts = (await getCollection('posts'))
 
     <div id="explore" class="mx-auto max-w-6xl px-4 pb-20 pt-2 sm:px-6 md:pb-28 md:pt-4">
       <div class="flex flex-col gap-10 md:gap-16 lg:gap-20">
-        <Section title="Code" variant="surface">
-          <div class="grid gap-6 md:grid-cols-2">
-            {
-              projects.map((project) => (
-                <ProjectCard
-                  title={project.data.title}
-                  blurb={project.data.blurb}
-                  slug={project.id}
-                  status={project.data.status}
-                  tags={project.data.tags}
-                />
-              ))
-            }
-          </div>
-          <div class="mt-8">
-            <a
-              href="/code"
-              class="group inline-flex items-center gap-1 text-sm font-medium text-text-dim transition-colors hover:text-green"
-            >
-              View all code
-              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true"
-                >→</span
-              >
-            </a>
-          </div>
-        </Section>
-
-        <Section title="Latest posts" variant="plain">
+        <Section title="Writing" variant="surface">
           {
-            posts.length > 0 ? (
+            featured ? (
               <>
-                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {posts.map((post) => (
-                    <PostCard
-                      title={post.data.title}
-                      blurb={post.data.blurb}
-                      slug={post.id}
-                      dated={post.data.dated}
-                      tags={post.data.tags}
-                    />
-                  ))}
-                </div>
+                <PostCard
+                  title={featured.data.title}
+                  blurb={featured.data.blurb}
+                  slug={featured.id}
+                  dated={featured.data.dated}
+                  tags={featured.data.tags}
+                  featured
+                />
+                {more.length > 0 && (
+                  <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {more.slice(0, 6).map((post) => (
+                      <PostCard
+                        title={post.data.title}
+                        blurb={post.data.blurb}
+                        slug={post.id}
+                        dated={post.data.dated}
+                        tags={post.data.tags}
+                      />
+                    ))}
+                  </div>
+                )}
                 <div class="mt-8">
                   <a
                     href="/blog"
@@ -98,19 +81,30 @@ const posts = (await getCollection('posts'))
           }
         </Section>
 
-        <Section title="Team" variant="surface">
-          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Section title="Code" variant="plain">
+          <div class="grid gap-6 md:grid-cols-2">
             {
-              team.map((member) => (
-                <TeamCard
-                  name={member.data.name}
-                  role={member.data.role}
-                  blurb={member.data.blurb}
-                  image={member.data.image}
-                  socials={member.data.socials}
+              projects.map((project) => (
+                <ProjectCard
+                  title={project.data.title}
+                  blurb={project.data.blurb}
+                  slug={project.id}
+                  status={project.data.status}
+                  tags={project.data.tags}
                 />
               ))
             }
+          </div>
+          <div class="mt-8">
+            <a
+              href="/code"
+              class="group inline-flex items-center gap-1 text-sm font-medium text-text-dim transition-colors hover:text-green"
+            >
+              View all code
+              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true"
+                >→</span
+              >
+            </a>
           </div>
         </Section>
       </div>
