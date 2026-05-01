@@ -1,6 +1,7 @@
 ---
 import 'katex/dist/katex.min.css'
 import Page from '@layouts/Page.astro'
+import Button from '@components/Button.astro'
 import { getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -39,31 +40,19 @@ const statusStyle: Record<string, string> = {
       >
       </div>
       <p class="mt-5 text-lg text-text-dim">{project.data.blurb}</p>
-      <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      <div class="mt-6 flex flex-wrap gap-3">
         {
           project.data.repo && (
-            <a
-              href={project.data.repo}
-              class="group inline-flex items-center gap-1 font-medium text-green transition-colors hover:text-purple"
-            >
-              Repository
-              <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </a>
+            <Button href={project.data.repo} variant="primary">
+              Repository <span class="btn-arrow" aria-hidden="true">→</span>
+            </Button>
           )
         }
         {
           project.data.url && (
-            <a
-              href={project.data.url}
-              class="group inline-flex items-center gap-1 font-medium text-green transition-colors hover:text-purple"
-            >
-              Website
-              <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </a>
+            <Button href={project.data.url} variant="secondary">
+              Website <span class="btn-arrow" aria-hidden="true">→</span>
+            </Button>
           )
         }
       </div>

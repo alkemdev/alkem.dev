@@ -1,0 +1,57 @@
+---
+/**
+ * Reusable button/link styled element. Renders as `<a>` when `href`
+ * is given (the typical case for static pages), `<button>` otherwise.
+ *
+ * Two variants:
+ *   - `primary`   filled purple, white text — the page's main action
+ *   - `secondary` bordered, transparent — for any "also you can"
+ *
+ * Use the slot for label content; pass an arrow span as a child if
+ * the action is navigational, e.g.
+ *   <Button href="/foo">Label <span class="btn-arrow">→</span></Button>
+ */
+interface Props {
+  href?: string | undefined
+  variant?: 'primary' | 'secondary'
+  size?: 'md' | 'lg'
+  class?: string | undefined
+}
+
+const { href, variant = 'primary', size = 'md', class: className } = Astro.props
+const Tag = href ? 'a' : 'button'
+
+const base =
+  'group inline-flex items-center gap-2 rounded-lg font-bold transition-[opacity,box-shadow,transform,border-color,color,background-color] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98]'
+
+const sizes = {
+  md: 'px-5 py-2.5 text-sm',
+  lg: 'px-6 py-3 text-sm',
+}
+
+const variants = {
+  primary:
+    'bg-purple text-white shadow-[0_0_24px_rgb(153_85_187_/_0.25)] hover:opacity-95 hover:shadow-[0_0_32px_rgb(153_85_187_/_0.35)] focus-visible:outline-green',
+  secondary:
+    'border border-border bg-bg/40 text-text backdrop-blur-sm hover:border-green hover:text-green hover:shadow-[0_0_20px_rgb(96_168_121_/_0.12)] focus-visible:outline-purple',
+}
+---
+
+<Tag href={href} class:list={[base, sizes[size], variants[variant], className]}>
+  <slot />
+</Tag>
+
+<style>
+  .btn-arrow {
+    display: inline-block;
+    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .group:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-arrow {
+      transition: none;
+    }
+  }
+</style>

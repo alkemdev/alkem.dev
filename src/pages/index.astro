@@ -4,6 +4,7 @@ import Nav from '@components/Nav.astro'
 import Footer from '@components/Footer.astro'
 import Hero from '@components/Hero.astro'
 import Section from '@components/Section.astro'
+import Button from '@components/Button.astro'
 import PostCard from '@components/PostCard.astro'
 import ProjectCard from '@components/ProjectCard.astro'
 import { getCollection } from 'astro:content'
@@ -30,7 +31,7 @@ const more = posts.slice(1)
 
     <div id="explore" class="mx-auto max-w-6xl px-4 pb-20 pt-2 sm:px-6 md:pb-28 md:pt-4">
       <div class="flex flex-col gap-10 md:gap-16 lg:gap-20">
-        <Section title="Writing" variant="surface">
+        <Section title="Blog" variant="surface">
           {
             featured ? (
               <>
@@ -57,19 +58,10 @@ const more = posts.slice(1)
                     ))}
                   </div>
                 )}
-                <div class="mt-8">
-                  <a
-                    href="/blog"
-                    class="group inline-flex items-center gap-1 text-sm font-medium text-text-dim transition-colors hover:text-green"
-                  >
-                    All posts
-                    <span
-                      class="transition-transform group-hover:translate-x-0.5"
-                      aria-hidden="true"
-                    >
-                      →
-                    </span>
-                  </a>
+                <div class="mt-10">
+                  <Button href="/blog" variant="secondary">
+                    All posts <span class="btn-arrow" aria-hidden="true">→</span>
+                  </Button>
                 </div>
               </>
             ) : (
@@ -97,17 +89,6 @@ const more = posts.slice(1)
                 />
               ))
             }
-          </div>
-          <div class="mt-8">
-            <a
-              href="/code"
-              class="group inline-flex items-center gap-1 text-sm font-medium text-text-dim transition-colors hover:text-green"
-            >
-              View all code
-              <span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true"
-                >→</span
-              >
-            </a>
           </div>
         </Section>
       </div>

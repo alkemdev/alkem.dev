@@ -1,17 +1,15 @@
 ---
 import { SITE } from '@/site'
 import { brand, hexToRgb } from '@/brand/colors'
+import Button from './Button.astro'
 
 const pr = hexToRgb(brand.purple)
 const gr = hexToRgb(brand.green)
 
 const fallbackBg = `radial-gradient(ellipse at 30% 50%, rgba(${pr.r},${pr.g},${pr.b},0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 50%, rgba(${gr.r},${gr.g},${gr.b},0.15) 0%, transparent 50%), ${brand.bg}`
-
-const purpleRgb = `${pr.r} ${pr.g} ${pr.b}`
-const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
 ---
 
-<style define:vars={{ purpleRgb, greenRgb }}>
+<style>
   /* Use `svh` so mobile address-bar collapse does not retrigger layout
      (`dvh` recalculates on scroll and causes visible jank). */
   .hero {
@@ -21,16 +19,6 @@ const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
     .hero {
       min-height: 100vh;
     }
-  }
-
-  .hero-cta-primary {
-    box-shadow: 0 0 24px rgb(var(--purpleRgb) / 0.25);
-  }
-  .hero-cta-primary:hover {
-    box-shadow: 0 0 32px rgb(var(--purpleRgb) / 0.35);
-  }
-  .hero-cta-secondary:hover {
-    box-shadow: 0 0 20px rgb(var(--greenRgb) / 0.12);
   }
 
   /* Staggered entrance — wordmark first, tagline + CTAs follow.
@@ -59,21 +47,9 @@ const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
     animation-delay: 0.4s;
   }
 
-  .hero-arrow {
-    display: inline-block;
-    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-  .hero-cta-primary:hover .hero-arrow,
-  .hero-cta-secondary:hover .hero-arrow {
-    transform: translateX(4px);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .hero-rise {
       animation: none;
-    }
-    .hero-arrow {
-      transition: none;
     }
   }
 </style>
@@ -123,18 +99,12 @@ const greenRgb = `${gr.r} ${gr.g} ${gr.b}`
       }
     </h1>
     <div class="hero-rise hero-rise-3 mt-12 flex flex-wrap justify-center gap-4">
-      <a
-        href="/blog"
-        class="hero-cta-primary group rounded-lg bg-purple px-6 py-3 text-sm font-bold text-white transition-[opacity,box-shadow,transform] hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green active:scale-[0.98]"
-      >
-        Read Blog <span class="hero-arrow" aria-hidden="true">→</span>
-      </a>
-      <a
-        href="/info"
-        class="hero-cta-secondary group rounded-lg border border-border bg-bg/40 px-6 py-3 text-sm font-bold text-text backdrop-blur-sm transition-[border-color,color,box-shadow,transform] hover:border-green hover:text-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple active:scale-[0.98]"
-      >
-        About Us <span class="hero-arrow" aria-hidden="true">→</span>
-      </a>
+      <Button href="/blog" variant="primary" size="lg">
+        Read Blog <span class="btn-arrow" aria-hidden="true">→</span>
+      </Button>
+      <Button href="/info" variant="secondary" size="lg">
+        About Us <span class="btn-arrow" aria-hidden="true">→</span>
+      </Button>
     </div>
   </div>
 </section>
